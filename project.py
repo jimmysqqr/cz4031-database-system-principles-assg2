@@ -1,5 +1,6 @@
 from preprocessing import DBConnection
 from annotation import processPlan
+from getpass import getpass
 
 class Application():
     def __init__(self):
@@ -17,10 +18,10 @@ class Application():
 
         Do change the parameters to your liking.
         """
+        pwd = getpass("Please input your postgres password: ")
 
-        # Remember to change the password before committing!
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="postgres", password="")
+                           dbname="TPC-H", user="postgres", password=pwd)
 
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
