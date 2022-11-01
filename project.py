@@ -1,5 +1,5 @@
 from preprocessing import DBConnection
-
+from annotation import processPlan
 
 class Application():
     def __init__(self):
@@ -17,8 +17,10 @@ class Application():
 
         Do change the parameters to your liking.
         """
+
+        # Remember to change the password before committing!
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="postgres", password="chellappa")
+                           dbname="TPC-H", user="postgres", password="")
 
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
@@ -27,6 +29,8 @@ class Application():
         print(type(plan))
         obj.closeConnection()
 
+        output = processPlan(plan, isStart=True)
+        print(output)
 
 if __name__ == '__main__':
     Application.main()
