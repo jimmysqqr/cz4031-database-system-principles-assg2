@@ -10,11 +10,13 @@
 ```
 
 1. Install Required Libraries
+
 ```shell
   pip install -r requirements.txt
 ```
-  
+
 2. Execute the program with following command
+
 ```shell
   python project.py
 ```

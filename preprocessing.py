@@ -56,6 +56,7 @@ class DBConnection:
         self.cursor.execute(
             f"EXPLAIN (FORMAT JSON) {self.query}")
 
+        # Need to peel away the wrappers from the raw output
         rawOutput = self.cursor.fetchall()
         plan = rawOutput[0][0][0]['Plan']
         self.queryPlan = plan
