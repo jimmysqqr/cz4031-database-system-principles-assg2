@@ -7,6 +7,8 @@ import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
+import algos.hash_join as hash_join
+import algos.limit as limit
 
 # PlanTraverser class
 class PlanTraverser:
