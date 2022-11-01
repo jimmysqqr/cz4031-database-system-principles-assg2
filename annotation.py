@@ -6,6 +6,7 @@ import random
 
 import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
+import algos.sequential_scan as sequential_scan
 
 # PlanTraverser class
 class PlanTraverser:
@@ -14,6 +15,7 @@ class PlanTraverser:
         # Instance variables
         self.Generic = generic_algo.generic
         self.Nested_Loop = nested_loop.nested_loop
+        self.Seq_Scan = sequential_scan.sequential_scan
 
 # Function to process a plan (which is in json format)
 def processPlan(plan, isStart=False):
