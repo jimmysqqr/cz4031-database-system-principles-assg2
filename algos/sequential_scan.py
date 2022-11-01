@@ -8,7 +8,7 @@ def sequential_scan(plan, isStart=False):
     # Process Sequential Scan node type
     output = annotation.getConnector(isStart)
 
-    output += "Perform Sequential Scan on relation: "
+    output += "perform Sequential Scan on relation: "
 
     # State the relation name
     if "Relation Name" in plan:
@@ -20,7 +20,7 @@ def sequential_scan(plan, isStart=False):
 
     # Check if the sequential scan was done with a filter
     if "Filter" in plan:
-        output += " , with condition: "
+        output += ", with condition: "
         output += plan['Filter'].replace("::text", "")
 
     output += ". "
