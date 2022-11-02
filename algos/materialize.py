@@ -1,8 +1,8 @@
-# Materialise Algorithm
+# Materialize Algorithm
 
 import annotation
 
-def materialise(plan, isStart = False):
+def materialize(plan, isStart = False):
     output = ""
 
     if "Plans" in plan:
@@ -12,8 +12,8 @@ def materialise(plan, isStart = False):
             if isStart:
                 isStart = False
 
-    if plan["Node Type"] == "Materialise":
+    if plan["Node Type"] == "Materialize":
         output = output + annotation.getConnector(isStart)
-        output = output + "Save the results in main memory to reduce latency and disk stroage overhead"
+        output = output + "Save the results in main memory to reduce latency and disk stroage overhead."
 
     return output
