@@ -7,9 +7,9 @@ def hash_join(plan, isStart = False):
 
     output = ""
 
-    temp = annotation.processPlan(plan["Plans"][1], isStart)
+    temp = annotation.processPlan(plan["Plans"][1], queue, isStart)
     output = output + temp + ""
-    temp = annotation.processPlan(plan["Plans"][0])
+    temp = annotation.processPlan(plan["Plans"][0], queue)
     output = output + temp + ""
 
     output = output + "Next, Hash Join the 2 results from previous operations "
