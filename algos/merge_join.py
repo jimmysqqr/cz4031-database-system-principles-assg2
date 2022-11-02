@@ -7,7 +7,7 @@ def merge_join(plan, isStart):
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            output = output + annotation.processPlan(child, isStart) + " "
+            output = output + annotation.processPlan(child, queue, isStart) + " "
             if isStart:
                 isStart = False
 
