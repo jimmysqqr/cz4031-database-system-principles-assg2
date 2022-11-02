@@ -25,7 +25,7 @@ class Application():
 
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
-        plan = obj.getQueryPlan(testQuery2)
+        plan = obj.getQueryPlan(testQuery1)
         print(plan)
         print(type(plan))
         obj.closeConnection()
