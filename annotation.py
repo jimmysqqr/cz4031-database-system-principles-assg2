@@ -19,7 +19,7 @@ class PlanTraverser:
         self.Index_Scan = index_scan.index_scan
 
 # Function to process a plan (which is in json format)
-def processPlan(plan, isStart=False):
+def processPlan(plan, queue, isStart=False):
     # Instantiate the PlanTraverser class
     traverser = PlanTraverser()
 
@@ -32,7 +32,7 @@ def processPlan(plan, isStart=False):
         processor = traverser.Generic
 
     processedPlan = startPlan(plan, isStart)
-    processedPlan += processor(plan, isStart)
+    processedPlan += processor(plan, queue, isStart)
     return processedPlan
 
 # TODO@darren: Change to include different connectors (different from wlee)

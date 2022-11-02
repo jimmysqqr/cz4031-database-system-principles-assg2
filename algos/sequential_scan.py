@@ -4,7 +4,15 @@ Sequential Scan Node Processor
 
 import annotation
 
-def sequential_scan(plan, isStart=False):
+def sequential_scan(plan, queue, isStart=False):
+    # Dictionary to be enqueued
+    q_item = {}
+    q_item["Node Type"] = plan["Node Type"]
+    q_item["Relation Name"] = plan["Relation Name"]
+    q_item["Total Cost"] = plan["Total Cost"]
+
+    queue.append(q_item)
+
     # Process Sequential Scan node type
     output = annotation.getConnector(isStart)
 
@@ -21,9 +29,9 @@ def sequential_scan(plan, isStart=False):
     # Check if the sequential scan was done with a filter
     if "Filter" in plan:
         output += ", with condition: "
-        output += plan['Filter'].replace("::text", "")
+        output += plan['Filter'].replace('::text', '')
 
-    output += ". "
+    output += ", as there is no index built on the desired attribute. "
 
     return output
     
