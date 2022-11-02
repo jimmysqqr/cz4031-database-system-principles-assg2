@@ -18,7 +18,7 @@ def merge_join(plan, isStart):
         output = output + " with condition " + plan["Merge Cond"].replace("::text", "")
 
     if "Join Type" == "Semi":
-        output = output + " however on the left relation's row is returned"
+        output = output + " however on the left relation's row is returned."
     else:
         output = output + "."
 
