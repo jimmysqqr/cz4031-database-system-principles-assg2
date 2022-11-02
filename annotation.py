@@ -8,6 +8,12 @@ import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
 
+### TOADD Wei Ling
+# import algos.hash_join as hash_join
+# import algos.limit as limit
+# import algos.materialise as materialise
+# import algos.merge_join as merge_join
+
 # PlanTraverser class
 class PlanTraverser:
     # Constructor
@@ -17,6 +23,7 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+
 
 # Function to process a plan (which is in json format)
 def processPlan(plan, isStart=False):
