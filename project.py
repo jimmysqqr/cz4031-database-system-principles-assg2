@@ -1,6 +1,7 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+from collections import deque
 
 class Application():
     def __init__(self):
@@ -26,12 +27,15 @@ class Application():
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
         plan = obj.getQueryPlan(testQuery2)
-        print(plan)
-        print(type(plan))
+        # print(plan)
         obj.closeConnection()
 
-        output = processPlan(plan, isStart=True)
-        print(output)
+        # Initialise a queue
+        q = deque()
 
+        output = processPlan(plan, q, isStart=True)
+        print(output)
+        for item in q:
+            print(item)
 if __name__ == '__main__':
     Application.main()

@@ -4,7 +4,15 @@ Index Scan Node Processor
 
 import annotation
 
-def index_scan(plan, isStart=False):
+def index_scan(plan, queue, isStart=False):
+    # Dictionary to be enqueued
+    q_item = {}
+    q_item["Node Type"] = plan["Node Type"]
+    q_item["Relation Name"] = plan["Relation Name"]
+    q_item["Total Cost"] = plan["Total Cost"]
+
+    queue.append(q_item)
+
     # Process Index Scan node type:
     output = annotation.getConnector(isStart)
 
