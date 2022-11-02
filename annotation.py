@@ -2,11 +2,13 @@
 This is the main file which is used to traverse/parse the query plan
 """
 import random
+from collections import deque
 
 import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
+
 
 # PlanTraverser class
 class PlanTraverser:
@@ -21,6 +23,7 @@ class PlanTraverser:
 # Function to process a plan (which is in json format)
 def processPlan(plan, isStart=False):
     # Instantiate the PlanTraverser class
+    # This is where the recursion occurs
     traverser = PlanTraverser()
 
     try:
@@ -30,7 +33,7 @@ def processPlan(plan, isStart=False):
     except:
         # A generic algo to use if the particular Node Type cannot be found in the traverser object's instance variables
         processor = traverser.Generic
-
+    
     processedPlan = startPlan(plan, isStart)
     processedPlan += processor(plan, isStart)
     return processedPlan

@@ -18,10 +18,11 @@ class Application():
 
         Do change the parameters to your liking.
         """
-        pwd = getpass("Please input your postgres password: ")
+        # User inputs the password and we can connect to PostgreSQL
+        password = getpass("Please input your PostgreSQL password: ")
 
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="postgres", password=pwd)
+                           dbname="TPC-H", user="postgres", password=password)
 
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"

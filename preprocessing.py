@@ -62,3 +62,14 @@ class DBConnection:
         self.queryPlan = plan
 
         return self.queryPlan
+
+    def getAltQueryPlans(self):
+        """
+        This method would return a few estimated AQPs by playing around with the default setting of the planner.
+
+        Specifically,
+
+        1. We disabled certain join algorithms as we feel the choice of join algorithm is a crucial companent in a QEP. PostgreSQL allows us to disable Merge, Hash and NL joins.
+        2. Coming to the data sccess methods, we are going under the assumption the planner would choose the most efficient access method. Plus it's not as 'interesting' to play with.
+        3. 
+        """
