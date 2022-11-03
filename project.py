@@ -24,9 +24,15 @@ class Application():
         obj = DBConnection(host="localhost", port="5432",
                            dbname="TPC-H", user="postgres", password=password)
 
-        testQuery1 = "select * from customer limit 5;"
-        testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
-        plan = obj.getQueryPlan(testQuery2)
+        # testQuery1 = "select distinct p_size from part order by p_size;"
+        # testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
+        
+        # Read in a query from one of the sql files in /sample_queries
+        fd = open("sample_queries/18.sql", "r")
+        testQuery = fd.read()
+        fd.close()
+        
+        plan = obj.getQueryPlan(testQuery)
         obj.closeConnection()
 
         output = processPlan(plan, isStart=True)
