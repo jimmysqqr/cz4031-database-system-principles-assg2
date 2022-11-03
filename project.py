@@ -1,6 +1,7 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+import json
 
 class Application():
     def __init__(self):
@@ -32,10 +33,14 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
+
+        hash1 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
         
-        plan = obj.getQueryPlan(testQuery)
+        plan = obj.getQueryPlan(hash1)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
+
+        print(json.dumps(plan, indent=4))
 
         output = processPlan(plan, isStart=True)
         print(output)
