@@ -2,13 +2,14 @@
 This is the main file which is used to traverse/parse the query plan
 """
 import random
-from collections import deque
 
 import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
-
+import algos.subquery_scan as subquery_scan
+import algos.unique as unique
+import algos.values_scan as values_scan
 
 # PlanTraverser class
 class PlanTraverser:
@@ -19,9 +20,12 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+        self.Subquery_Scan = subquery_scan.subquery_scan
+        self.Unique = unique.unique
+        self.Values_Scan = values_scan.values_scan
 
 # Function to process a plan (which is in json format)
-def processPlan(plan, queue, isStart=False):
+def processPlan(plan, isStart=False):
     # Instantiate the PlanTraverser class
     # This is where the recursion occurs
     traverser = PlanTraverser()
@@ -35,11 +39,11 @@ def processPlan(plan, queue, isStart=False):
         processor = traverser.Generic
     
     processedPlan = startPlan(plan, isStart)
-    processedPlan += processor(plan, queue, isStart)
+    processedPlan += processor(plan, isStart)
     return processedPlan
 
 # TODO@darren: Change to include different connectors (different from wlee)
-CONNECTORS = ["Thereafter, ", "Then, ", "Next, ", "Subsequently, "]
+CONNECTORS = ["After that, ", "Then, ", "Next, ", "Subsequently, "]
 
 # Get random word to connect two sentences together
 def getConnector(isStart=False):
