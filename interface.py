@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         # Add a label and a line edit to the form layout
         self.line = QtWidgets.QLineEdit(self)
         self.nameLabel = QtWidgets.QLabel(self)
-        self.nameLabel.setText('Name:')
+        self.nameLabel.setText('Query:')
         topLayout.addRow(self.nameLabel, self.line)
         layout.addLayout(topLayout)
 
@@ -64,9 +64,9 @@ class MainWindow(QMainWindow):
     
 
 
-app = QApplication([])
-app.setStyle('Fusion')
-window = MainWindow()
-window.show()
+# app = QApplication([])
+# app.setStyle('Fusion')
+# window = MainWindow()
+# window.show()
 
-app.exec()
+# app.exec()

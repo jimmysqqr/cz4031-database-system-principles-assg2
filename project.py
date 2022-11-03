@@ -1,6 +1,8 @@
+from interface import MainWindow
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+from PyQt6.QtWidgets import QApplication
 
 class Application():
     def __init__(self):
@@ -22,7 +24,7 @@ class Application():
         password = getpass("Please input your PostgreSQL password: ")
 
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="postgres", password=password)
+                           dbname="TPC-H", user="terry", password=password)
 
         # testQuery1 = "select distinct p_size from part order by p_size;"
         # testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
@@ -32,6 +34,13 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
+
+        app = QApplication([])
+        app.setStyle('Fusion')
+        window = MainWindow()
+        window.show()
+
+        app.exec()
         
         plan = obj.getQueryPlan(testQuery)
         aqps = obj.getAltQueryPlans()
