@@ -1,6 +1,7 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+import json
 
 class Application():
     def __init__(self):
@@ -32,10 +33,17 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
+
+        function1 = "SELECT * FROM generate_series(2,4);"
+        function2 = """
+            SELECT * FROM generate_series('2008-03-01 00:00'::timestamp, '2008-03-04 12:00', '10 hours');
+        """
         
-        plan = obj.getQueryPlan(testQuery)
+        plan = obj.getQueryPlan(function2)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
+
+        print(json.dumps(plan, indent=4))               
 
         output = processPlan(plan, isStart=True)
         print(output)
