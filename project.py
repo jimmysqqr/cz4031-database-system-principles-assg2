@@ -1,6 +1,7 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+import json
 
 class Application():
     def __init__(self):
@@ -32,10 +33,39 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
+
+        append1 = """
+            select p_brand from part where p_size < 2
+            union
+            select p_brand from part where p_size > 20;
+        """
+        append2 = """
+            select p_brand from part where p_size < 2
+            union all
+            select p_brand from part where p_size > 20;
+        """
+        #TODO intersect and except causes infinite loop in subquery_scan
+        append3 = """
+            select p_brand from part where p_size < 2
+            intersect
+            select p_brand from part where p_size > 20;
+        """
+        append4 = """
+            select p_brand from part where p_size < 2
+            except
+            select p_brand from part where p_size > 20;
+        """
+
+        subquery = """
+            select p_brand from part 
+            where p_retailprice = (select max(p_retailprice) from part);
+        """
         
-        plan = obj.getQueryPlan(testQuery)
+        plan = obj.getQueryPlan(append1)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
+
+        print(json.dumps(plan, indent=4))
 
         output = processPlan(plan, isStart=True)
         print(output)
