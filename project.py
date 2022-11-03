@@ -27,16 +27,23 @@ class Application():
 
         testQuery1 = "select * from customer limit 5;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
+        testQuery3 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
         plan = obj.getQueryPlan(testQuery2)
         # print(plan)
-        obj.closeConnection()
+        
 
-        # Initialise a queue
+        # Initialise a queue to store the pre-order traversal of the query plan operator tree
         q = deque()
 
+        print(plan)
         output = processPlan(plan, q, isStart=True)
         print(output)
         for item in q:
             print(item)
+
+        obj.getAltQueryPlans()
+        
+        obj.closeConnection()
+
 if __name__ == '__main__':
     Application.main()

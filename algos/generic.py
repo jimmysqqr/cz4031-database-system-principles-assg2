@@ -7,7 +7,13 @@ def generic(plan, queue, isStart=False):
     # Dictionary to be enqueued
     q_item = {}
     q_item["Node Type"] = plan["Node Type"]
-    q_item["Relation Name"] = plan["Relation Name"]
+    
+    try:
+        q_item["Relation Name"] = plan["Relation Name"]
+    except:
+        plan["Relation Name"] = "I DOT HAVE A RELATION NAME"
+    # SOme operators dont have relation name for some weird reason
+
     q_item["Total Cost"] = plan["Total Cost"]
 
     queue.append(q_item)
