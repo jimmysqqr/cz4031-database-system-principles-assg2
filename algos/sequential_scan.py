@@ -4,15 +4,7 @@ Sequential Scan Node Processor
 
 import annotation
 
-def sequential_scan(plan, queue, isStart=False):
-    # Dictionary to be enqueued
-    q_item = {}
-    q_item["Node Type"] = plan["Node Type"]
-    q_item["Relation Name"] = plan["Relation Name"]
-    q_item["Total Cost"] = plan["Total Cost"]
-
-    queue.append(q_item)
-
+def sequential_scan(plan, isStart=False):
     # Process Sequential Scan node type
     output = annotation.getConnector(isStart)
 

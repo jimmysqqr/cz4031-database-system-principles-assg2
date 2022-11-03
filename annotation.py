@@ -2,7 +2,6 @@
 This is the main file which is used to traverse/parse the query plan
 """
 import random
-from collections import deque
 
 import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
@@ -21,7 +20,7 @@ class PlanTraverser:
         self.Index_Scan = index_scan.index_scan
 
 # Function to process a plan (which is in json format)
-def processPlan(plan, queue, isStart=False):
+def processPlan(plan, isStart=False):
     # Instantiate the PlanTraverser class
     # This is where the recursion occurs
     traverser = PlanTraverser()
@@ -35,7 +34,7 @@ def processPlan(plan, queue, isStart=False):
         processor = traverser.Generic
     
     processedPlan = startPlan(plan, isStart)
-    processedPlan += processor(plan, queue, isStart)
+    processedPlan += processor(plan, isStart)
     return processedPlan
 
 # TODO@darren: Change to include different connectors (different from wlee)
