@@ -3,20 +3,11 @@
 import annotation
 
 def sort(plan, isStart):
-    # Dict to add
-    q_item = {}
-    q_item["Mode Type"] = plan["Node Type"]
-    q_item["Relation Name"] = plan["Relation Name"]
-    q_item["Total Cost"] = plan["Total Cost"]
-
-    queue.append(q_item)
-
-
     output = annotation.getConnector(isStart)
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            temp = annotation.processPlan(child, queue, isStart)
+            temp = annotation.processPlan(child, isStart)
             output = output + temp + " "
 
             if isStart:
