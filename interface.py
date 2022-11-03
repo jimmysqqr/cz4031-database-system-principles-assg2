@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         tree.create_node("Mark",  "mark"   , parent="jane")
         tree.create_node("Dog",  "dog"   , parent="mary")
         tree.save2file("test.txt",line_type="ascii-em")
-        text=open('test.txt').read()
+        text=open('test.txt', encoding="utf8").read()
         self.el1.setText(text)
 
     def get_input(self):
