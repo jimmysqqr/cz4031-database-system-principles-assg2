@@ -1,6 +1,7 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+import json
 
 class Application():
     def __init__(self):
@@ -32,10 +33,56 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
+
+        cte1 = """
+            with cte1 as (
+                select * from customer
+            ), cte2 as (
+            select * from orders, cte1 where o_orderkey < 1000
+            )
+            select * from cte1 C, cte2 O where C.c_custkey = O.o_custkey;
+        """
+        cte2 = """
+            with cte1 as (
+                select n_name, n_nationkey, n_regionkey
+                from nation
+            ), cte2 as (
+                select o_custkey, o_orderkey from orders, cte1
+                where o_orderdate >= '1994-01-01'
+                and o_orderdate < '1995-01-01'
+                and n_name = 'INDONESIA' or n_name = 'INDIA'
+            )
+            select
+                n_name,
+                sum(l_extendedprice * (1 - l_discount)) as revenue
+                from
+                customer,
+                cte2,
+                lineitem,
+                supplier,
+                cte1,
+                region
+                where
+                c_custkey = o_custkey
+                and l_orderkey = o_orderkey
+                and l_suppkey = s_suppkey
+                and c_nationkey = s_nationkey
+                and s_nationkey = n_nationkey
+                and n_regionkey = r_regionkey
+                and r_name = 'ASIA'
+                and c_acctbal > 10
+                and s_acctbal > 20
+                group by
+                n_name
+                order by
+                revenue desc;
+        """
         
-        plan = obj.getQueryPlan(testQuery)
+        plan = obj.getQueryPlan(cte1)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
+
+        print(json.dumps(plan, indent=4))
 
         output = processPlan(plan, isStart=True)
         print(output)
