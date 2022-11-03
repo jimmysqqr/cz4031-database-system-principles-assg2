@@ -7,6 +7,7 @@ import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
+import algos.aggregate as aggregate
 
 
 # PlanTraverser class
@@ -18,6 +19,7 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+        self.Aggregate = aggregate.aggregate
 
 # Function to process a plan (which is in json format)
 def processPlan(plan, isStart=False):
