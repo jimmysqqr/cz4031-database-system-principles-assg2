@@ -24,6 +24,5 @@ def sequential_scan(plan, isStart=False):
         output += plan['Filter'].replace('::text', '')
 
     output += ", as there is no index built on the desired attribute. "
-
     return output
     
