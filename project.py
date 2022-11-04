@@ -33,17 +33,12 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
-
-        function1 = "SELECT * FROM generate_series(2,4);"
-        function2 = """
-            SELECT * FROM generate_series('2008-03-01 00:00'::timestamp, '2008-03-04 12:00', '10 hours');
-        """
         
-        plan = obj.getQueryPlan(function2)
+        plan = obj.getQueryPlan(testQuery)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
 
-        print(json.dumps(plan, indent=4))               
+        print(json.dumps(plan, indent=4))
 
         output = processPlan(plan, isStart=True)
         print(output)
