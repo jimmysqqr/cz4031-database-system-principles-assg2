@@ -34,34 +34,8 @@ class Application():
         testQuery = fd.read()
         fd.close()
 
-        append1 = """
-            select p_brand from part where p_size < 2
-            union
-            select p_brand from part where p_size > 20;
-        """
-        append2 = """
-            select p_brand from part where p_size < 2
-            union all
-            select p_brand from part where p_size > 20;
-        """
-        #TODO intersect and except causes infinite loop in subquery_scan
-        append3 = """
-            select p_brand from part where p_size < 2
-            intersect
-            select p_brand from part where p_size > 20;
-        """
-        append4 = """
-            select p_brand from part where p_size < 2
-            except
-            select p_brand from part where p_size > 20;
-        """
+        plan = obj.getQueryPlan(testQuery)
 
-        subquery = """
-            select p_brand from part 
-            where p_retailprice = (select max(p_retailprice) from part);
-        """
-        
-        plan = obj.getQueryPlan(append1)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
 
