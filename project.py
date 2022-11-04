@@ -34,9 +34,14 @@ class Application():
         testQuery = fd.read()
         fd.close()
 
-        hash1 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
+        group1 = """
+            SELECT p_brand FROM part group by p_brand
+        """
+        group2 = """
+            SELECT p_brand, p_mfgr FROM part group by p_brand, p_mfgr
+        """
         
-        plan = obj.getQueryPlan(hash1)
+        plan = obj.getQueryPlan(group2)
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
 
