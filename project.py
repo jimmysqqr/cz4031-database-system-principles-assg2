@@ -33,9 +33,8 @@ class Application():
         fd = open("sample_queries/18.sql", "r")
         testQuery = fd.read()
         fd.close()
-
+        
         plan = obj.getQueryPlan(testQuery)
-
         aqps = obj.getAltQueryPlans()
         obj.closeConnection()
 

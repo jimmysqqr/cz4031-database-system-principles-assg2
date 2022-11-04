@@ -10,6 +10,7 @@ import algos.index_scan as index_scan
 import algos.subquery_scan as subquery_scan
 import algos.unique as unique
 import algos.values_scan as values_scan
+import algos.function_scan as function_scan
 import algos.cte_scan as cte_scan
 import algos.append as append
 
@@ -24,6 +25,7 @@ class PlanTraverser:
         self.Index_Scan = index_scan.index_scan
         self.Subquery_Scan = subquery_scan.subquery_scan
         self.Unique = unique.unique
+        self.Function_Scan = function_scan.function_scan
         self.Values_Scan = values_scan.values_scan
         self.CTE_Scan = cte_scan.cte_scan
         self.Append = append.append
