@@ -2,6 +2,7 @@ from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
 import json
+
 class Application():
     def __init__(self):
         pass
