@@ -7,6 +7,7 @@ import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
+import algos.aggregate as aggregate
 import algos.subquery_scan as subquery_scan
 import algos.unique as unique
 import algos.values_scan as values_scan
@@ -25,6 +26,7 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+        self.Aggregate = aggregate.aggregate
         self.Subquery_Scan = subquery_scan.subquery_scan
         self.Unique = unique.unique
         self.Hash = hash.hash

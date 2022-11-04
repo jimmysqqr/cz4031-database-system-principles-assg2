@@ -1,7 +1,9 @@
 from preprocessing import DBConnection
 from annotation import processPlan
 from getpass import getpass
+from collections import deque
 import json
+
 
 class Application():
     def __init__(self):
@@ -49,6 +51,9 @@ class Application():
 
         output = processPlan(plan, isStart=True)
         print(output)
+        for item in q:
+            print(item)
+
 
 if __name__ == '__main__':
     Application.main()
