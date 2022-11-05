@@ -29,7 +29,7 @@ class Application():
         # testQuery3 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
         
         # Read in a query from one of the sql files in /sample_queries
-        fd = open("sample_queries/18.sql", "r")
+        fd = open("sample_queries/2.sql", "r")
         testQuery = fd.read()
         fd.close()
         
