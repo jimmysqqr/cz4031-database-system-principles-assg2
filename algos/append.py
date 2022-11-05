@@ -5,7 +5,8 @@ Append Node Processor
 import annotation
 
 def append(plan, isStart=False):
-    output = annotation.getConnector(isStart)
+    output = ""
+    # output = annotation.getConnector(isStart)
 
     # Explore the sub-plans of this node first (usually scan operators)
     if "Plans" in plan:

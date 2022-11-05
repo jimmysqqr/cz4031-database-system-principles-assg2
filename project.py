@@ -40,7 +40,9 @@ class Application():
             SELECT p_brand FROM part group by p_brand
         """
         group2 = """
-            SELECT p_brand, p_mfgr FROM part group by p_brand, p_mfgr
+            select p_brand from part where p_size < 2
+            intersect
+            select p_brand from part where p_size > 20;
         """
         
         plan = obj.getQueryPlan(group2)
@@ -51,9 +53,6 @@ class Application():
 
         output = processPlan(plan, isStart=True)
         print(output)
-        for item in q:
-            print(item)
-
 
 if __name__ == '__main__':
     Application.main()
