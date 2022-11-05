@@ -1,7 +1,8 @@
-from treelib import Node, Tree
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtCore import QSize
-from PyQt6 import QtWidgets
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6 import QtWidgets, QtCore
+import graphviz
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -10,17 +11,24 @@ class MainWindow(QMainWindow):
         self.initUI()
 
     def tree_display(self):
-        tree = Tree()
-        tree.create_node("Harry", "harry")  # No parent means its the root node
-        tree.create_node("Jane",  "jane"   , parent="harry")
-        tree.create_node("Bill",  "bill"   , parent="harry")
-        tree.create_node("Diane", "diane"  , parent="jane")
-        tree.create_node("Mary",  "mary"   , parent="diane")
-        tree.create_node("Mark",  "mark"   , parent="jane")
-        tree.create_node("Dog",  "dog"   , parent="mary")
-        tree.save2file("test.txt",line_type="ascii-em")
+        f = graphviz.Digraph(filename = "hello.gv")
+        names = ["A","B","C","D","E","F","G","H"]
+        positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
+        for name, position in zip(names, positions):
+            f.node(name, position)
+        
+        #Specify edges
+        f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
+        f.edge("B","D"); f.edge("B","E") #Team A relationship
+        f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
+        
+        f.render("temp_img",format="png", view=False)
+
         text=open('test.txt', encoding="utf8").read()
         self.el1.setText(text)
+
+        self.im = QPixmap("./temp_img.png")
+        self.imgLabel.setPixmap(self.im)
 
     def get_input(self):
         self.el2.setText(self.line.text())
@@ -30,13 +38,14 @@ class MainWindow(QMainWindow):
         layout = QtWidgets.QVBoxLayout()
 
 
+
         # Create a form layout for the label and line edit
         topLayout = QtWidgets.QFormLayout()
         # Add a label and a line edit to the form layout
         self.line = QtWidgets.QLineEdit(self)
-        self.nameLabel = QtWidgets.QLabel(self)
-        self.nameLabel.setText('Name:')
-        topLayout.addRow(self.nameLabel, self.line)
+        self.queryLabel = QtWidgets.QLabel(self)
+        self.queryLabel.setText('Query:')
+        topLayout.addRow(self.queryLabel, self.line)
         layout.addLayout(topLayout)
 
         topBtn = QtWidgets.QPushButton('Top')
@@ -54,6 +63,16 @@ class MainWindow(QMainWindow):
 
         self.el2 = QtWidgets.QTextEdit(self)
         layout.addWidget(self.el2)
+
+        self.imgLabel = QtWidgets.QLabel(self)
+        self.im = QPixmap("./Empty.png")
+        self.imgLabel.setScaledContents(True)
+        self.imgLabel.setPixmap(self.im)
+
+
+        self.grid = QtWidgets.QGridLayout()
+        self.grid.addWidget(self.imgLabel,10,10)
+        layout.addLayout(self.grid)
         
         
         widget = QtWidgets.QWidget()
