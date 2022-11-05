@@ -34,10 +34,10 @@ class Application():
         print(type(plan))
         # dbname="TPC-H", user="terry", password=password)
 
-        # testQuery1 = "select distinct p_size from part order by p_size;"
+        # testQuery1 = "select c_custkey from customer;"
         # testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
         # testQuery3 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
-        
+
         # Read in a query from one of the sql files in /sample_queries
         fd = open("sample_queries/2.sql", "r")
         testQuery = fd.read()
@@ -51,15 +51,29 @@ class Application():
             intersect
             select p_brand from part where p_size > 20;
         """
-        
-        plan = obj.getQueryPlan(group2)
-        aqps = obj.getAltQueryPlans()
+
+        plan = obj.getQueryPlan(testQuery)
+        obj.getAltQueryPlans()
+
+        # These attributes for the diff in cost of the whole query plans
+        print(obj.estimatedCost)
+        print(obj.queryCostDict.keys())
+        #print(f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
+        #print(f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
+
+        # These attributes for the diff in cost of each join sub tree (idea is their relative difference approximates the increase/decrease in cost!)
+        print(obj.prefixSumJoin)
+        print(obj.joinTreeCostDict.keys())
+        # print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
+        # print("Relative increase in cost of join subtrees in AQP: {}".format(diff))
+
         obj.closeConnection()
 
-        print(json.dumps(plan, indent=4))
+        #print(json.dumps(plan, indent=4))
 
         output = processPlan(plan, isStart=True)
         print(output)
+
 
 if __name__ == '__main__':
     Application.main()

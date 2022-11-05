@@ -21,6 +21,8 @@ class DBConnection:
         # For evaluating the representative alternative query plans
         self.prefixSumJoin = list()
         self.altQueryPlans = list()
+        self.queryCostDict = dict()
+        self.joinTreeCostDict = dict()
 
         try:
             # Connecting to the database and initializing the cursor as class variables
@@ -145,7 +147,7 @@ class DBConnection:
 
         self.prefixSumJoin = result
 
-    def evaluateAQP(self, postOrder):
+    def evaluateAQP(self, postOrder, key):
         """
         NOTE: This method would only be called if the query has a join operation.
         """
@@ -169,10 +171,12 @@ class DBConnection:
                 result.append(round(currSum, 2))
                 #currSum = 0
 
-        diff = [round(result[i] - self.prefixSumJoin[i], 2)
-                for i in range(len(result))]
-        print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
-        print("Relative increase in cost of join subtrees in AQP: {}".format(diff))
+        diff = [round(result[i] - self.prefixSumJoin[i], 2) for i in range(len(result))]
+
+        self.joinTreeCostDict[key] = diff
+        # print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
+        # print("Relative increase in cost of join subtrees in AQP: {}".format(diff))
+
 
     def getAltQueryPlans(self):
         """
@@ -206,8 +210,9 @@ class DBConnection:
 
                 self.cursor.execute(
                     f"EXPLAIN (FORMAT JSON) {self.query}")
-                # Need to peel away the wrappers from the raw output
                 rawOutput = self.cursor.fetchall()
+                # Execute query and fetch the query execution plan from PostgreSQL
+
                 altPlan = rawOutput[0][0][0]['Plan']
                 self.altQueryPlans.append(altPlan)
                 # Collect the alternative query plans
@@ -219,23 +224,34 @@ class DBConnection:
                 # self.cursor.execute("SHOW ALL")
                 # rawOutput = self.cursor.fetchall()
                 # print(rawOutput)
-                # # For debugging, prints the runtime configuration
+                # For debugging, prints the runtime configuration
 
-                print(f"Alternative Query Plan {i}")
-                print(f"Operators disabled: {j1} and {j2}")
+                #print(f"Alternative Query Plan {i+1}")
+                #print(f"Operators disabled: {j1} and {j2}")
+
                 aqp = self.getPostOrder(self.altQueryPlans[i], [])
                 cost = self.getTotalCost(aqp)
-                print(aqp)
-                print()
-                print(
-                    f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
-                print(
-                    f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
-                print()
-                self.evaluateAQP(aqp)
-                print("\n\n")
+                # Computing the postorder of the AQP and it's estimated total cost
 
-            else:
-                pass
+                key = list(set(['HASHJOIN', 'MERGEJOIN', 'NESTLOOP']) - set([j1, j2]))[0]
+                self.queryCostDict[key] = cost
+                # Adding the cost to a class dictionary (key is just a protracted way to retrieve the join type!)
 
-        return self.altQueryPlans
+                #print(aqp)
+                #print(f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
+                #print(f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
+
+                self.evaluateAQP(aqp, key)
+                # Evaluating the relative increase (or decrease) in cost when the operator is swapped out in the query plan
+
+        else:
+            """
+            Room for extension. We personally feel it's only necessary to retrieve the AQPs for annotating the joins as it gives the user valuable insight on how 
+            the different join algorithms affect the cost of the query. However when it comes to index scan it is well know that the Sequential Scan is the worst 
+            scan a query could execute. We assume the QEP would prefer other scans if applicable and knowing the cost difference would not provide much insight.
+
+            Hence we do not retrieve the AQPs for queries without joins.
+            """
+            pass
+
+        print(f"{len(self.altQueryPlans)} alternate query plans were retrieved.")
