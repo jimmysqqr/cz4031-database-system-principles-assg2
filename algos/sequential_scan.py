@@ -21,9 +21,8 @@ def sequential_scan(plan, isStart=False):
     # Check if the sequential scan was done with a filter
     if "Filter" in plan:
         output += ", with condition: "
-        output += plan['Filter'].replace("::text", "")
+        output += plan['Filter'].replace('::text', '')
 
-    output += ". "
-
+    output += ", as there is no index built on the desired attribute. "
     return output
     
