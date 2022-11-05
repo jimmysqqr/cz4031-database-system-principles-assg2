@@ -1,0 +1,14 @@
+Harry
+╠══ Bill
+╚══ Jane
+    ╠══ Diane
+    ║   ╚══ Mary
+    ║       ╚══ Dog
+    ╚══ Mark
+Harry
+╠══ Bill
+╚══ Jane
+    ╠══ Diane
+    ║   ╚══ Mary
+    ║       ╚══ Dog
+    ╚══ Mark
