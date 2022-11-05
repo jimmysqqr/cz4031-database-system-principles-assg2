@@ -1,5 +1,6 @@
 import psycopg2
 
+
 class DBConnection:
     def __init__(self, host="localhost", port='5432', dbname="TPC-H", user="postgres", password=""):
         # Initialize the class variables
@@ -7,7 +8,7 @@ class DBConnection:
         # For the database connection
         self.cursor = None
         self.connection = None
-        
+
         # For the input query and query plan information
         self.query = ""
         self.queryPlan = dict()
@@ -83,9 +84,9 @@ class DBConnection:
         if 'Plans' in queryPlan:
             for subPlan in queryPlan['Plans']:
                 self.getPostOrder(subPlan, result)
-        #DFS
+        # DFS
 
-        if(not self.hasJoin and queryPlan['Node Type'] in ['Nested Loop', 'Hash Join', 'Merge Join']):
+        if (not self.hasJoin and queryPlan['Node Type'] in ['Nested Loop', 'Hash Join', 'Merge Join']):
             self.hasJoin = True
         # Set the hasJoin attribute if the query plan has a join operator
 
@@ -103,9 +104,9 @@ class DBConnection:
 
         for op in postOrder:
             result.add(op[0])
-        
+
         return result
-        
+
     def getTotalCost(self, postOrder):
         """
         This method evaluates the total estimated cost of the query plan scanning it's post order traversal.
@@ -114,9 +115,9 @@ class DBConnection:
 
         for op in postOrder:
             result += op[1]
-        
+
         return result
-    
+
     def generatePrefixSumJoin(self):
         """
         This method returns a list of the cost of the subtrees rooted by a join operator in the query plan operator tree.
@@ -124,7 +125,7 @@ class DBConnection:
 
         NOTE: We only call this method for the optimal QEP. It will be used later for evaluating the AQPs.
         """
-        
+
         currSum = 0
         result = list()
         joins = set(['Nested Loop', 'Hash Join', 'Merge Join'])
@@ -133,8 +134,8 @@ class DBConnection:
             op = self.postOrder[i]
             currSum += op[1]
 
-            if(op[0] in joins):
-                if(i < len(self.postOrder)-1 and self.postOrder[i+1][0] == 'Gather'):
+            if (op[0] in joins):
+                if (i < len(self.postOrder)-1 and self.postOrder[i+1][0] == 'Gather'):
                     currSum += self.postOrder[i+1][1]
                     i += 1
                 # Check for Gather operators
@@ -144,15 +145,13 @@ class DBConnection:
 
         self.prefixSumJoin = result
 
-        
-
     def evaluateAQP(self, postOrder):
         """
         NOTE: This method would only be called if the query has a join operation.
         """
         if len(self.prefixSumJoin) == 0:
             self.generatePrefixSumJoin()
-        
+
         currSum = 0
         result = list()
         joins = set(['Nested Loop', 'Hash Join', 'Merge Join'])
@@ -161,8 +160,8 @@ class DBConnection:
             op = postOrder[i]
             currSum += op[1]
 
-            if(op[0] in joins):
-                if(i < len(postOrder)-1 and postOrder[i+1][0] == 'Gather'):
+            if (op[0] in joins):
+                if (i < len(postOrder)-1 and postOrder[i+1][0] == 'Gather'):
                     currSum += postOrder[i+1][1]
                     i += 1
                 # Check for Gather operators
@@ -170,8 +169,10 @@ class DBConnection:
                 result.append(round(currSum, 2))
                 #currSum = 0
 
+        diff = [round(result[i] - self.prefixSumJoin[i], 2)
+                for i in range(len(result))]
         print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
-        print("Cost of join subtrees in AQP: {}".format(result))
+        print("Relative increase in cost of join subtrees in AQP: {}".format(diff))
 
     def getAltQueryPlans(self):
         """
@@ -192,10 +193,10 @@ class DBConnection:
 
         print("Origical QEP")
         print(self.postOrder)
-        print(f"Total Estimated Cost = {self.estimatedCost}")
+        print(f"Total Estimated Cost = {round(self.estimatedCost, 2)}")
         print()
 
-        if(self.hasJoin):
+        if (self.hasJoin):
             joins = ['HASHJOIN', 'MERGEJOIN', 'NESTLOOP', 'HASHJOIN']
             for i in range(3):
                 j1, j2 = joins[i], joins[i+1]
@@ -223,14 +224,16 @@ class DBConnection:
                 print(f"Alternative Query Plan {i}")
                 print(f"Operators disabled: {j1} and {j2}")
                 aqp = self.getPostOrder(self.altQueryPlans[i], [])
-                # cost = self.getTotalCost(aqp)
+                cost = self.getTotalCost(aqp)
                 print(aqp)
-                # print(f"Increase in Estimated Cost = {cost-self.estimatedCost}")
-                # print(f"Relative increase in estimated cost = {(cost-self.estimatedCost)/self.estimatedCost}")
-                # print(f"Relative increase in estimated cost (Rounded) = {round((cost-self.estimatedCost)/self.estimatedCost)}")
-
-                self.evaluateAQP(aqp)
                 print()
+                print(
+                    f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
+                print(
+                    f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
+                print()
+                self.evaluateAQP(aqp)
+                print("\n\n")
 
             else:
                 pass
