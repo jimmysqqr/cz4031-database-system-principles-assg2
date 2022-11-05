@@ -21,6 +21,6 @@ def index_scan(plan, isStart=False):
         if "Filter" in plan:
             output += ". Index scan output is further filtered based on these condition(s): " + plan["Filter"].replace('::text', '')
 
-        output += ". "
+        output += ". It is faster than a Sequential Scan due to high selectivity of predicate. "
 
     return output

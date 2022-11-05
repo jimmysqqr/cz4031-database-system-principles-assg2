@@ -23,6 +23,6 @@ def sequential_scan(plan, isStart=False):
         output += ", with condition: "
         output += plan['Filter'].replace('::text', '')
 
-    output += ", as there is no index built on the desired attribute. "
+    output += ", as there is no index built on the desired attribute. Also a majority of rows are getting fetched due to low selectivity of the predicate. "
     return output
     
