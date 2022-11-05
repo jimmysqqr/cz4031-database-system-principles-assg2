@@ -6,7 +6,7 @@
 
 ```shell
   python -m venv cz4031
-  cz4031\\Scripts\\activate
+  cz4031\Scripts\activate
 ```
 
 1. Install Required Libraries
