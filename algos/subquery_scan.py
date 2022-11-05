@@ -9,9 +9,9 @@ def subquery_scan(plan, isStart=False):
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            output += annotation.processPlan(plan, isStart)
-            if start:
-                start = False
+            output += annotation.processPlan(child, isStart)
+            if isStart:
+                isStart = False
 
     output += annotation.getConnector(isStart)
     output += "do a subquery scan on the output of the sub-query in earlier operations"
