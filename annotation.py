@@ -7,6 +7,8 @@ import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
 import algos.index_scan as index_scan
+import algos.hash_join as hash_join
+import algos.limit as limit
 import algos.merge_join as merge_join
 import algos.setop as setop
 import algos.sort as sort
@@ -30,6 +32,8 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+        self.Hash_Join = hash_join.hash_join
+        self.Limit = limit.limit
         self.Merge_Join = merge_join.merge_join
         self.SetOp = setop.setop
         self.Sort = sort.sort
