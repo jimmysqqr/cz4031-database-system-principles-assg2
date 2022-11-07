@@ -195,7 +195,7 @@ class DBConnection:
         self.postOrder = self.getPostOrder(self.queryPlan, [])
         self.estimatedCost = self.getTotalCost(self.postOrder)
 
-        print("Origical QEP")
+        print("Original QEP")
         print(self.postOrder)
         print(f"Total Estimated Cost = {round(self.estimatedCost, 2)}")
         print()
