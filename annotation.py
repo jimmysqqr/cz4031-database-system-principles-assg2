@@ -1,8 +1,6 @@
 """
 This is the main file which is used to traverse/parse the query plan
 """
-import random
-
 import algos.generic as generic_algo
 import algos.nested_loop as nested_loop
 import algos.sequential_scan as sequential_scan
@@ -49,7 +47,7 @@ class PlanTraverser:
         self.Append = append.append
 
 # Function to process a plan (which is in json format)
-def processPlan(plan, isStart=False):
+def processPlan(plan, output):
     # Instantiate the PlanTraverser class
     # This is where the recursion occurs
     traverser = PlanTraverser()
@@ -62,30 +60,73 @@ def processPlan(plan, isStart=False):
         # A generic algo to use if the particular Node Type cannot be found in the traverser object's instance variables
         processor = traverser.Generic
     
-    processedPlan = startPlan(plan, isStart)
-    processedPlan += processor(plan, isStart)
-    return processedPlan
+    # processedPlan = startPlan(plan, output, isStart)
+    processor(plan, output)
+    return 
+
+def processCosts(output, obj):
+    new_output = []
+    join_count = 0
+    # Iterate through the output list
+    for line in output:
+        # Check for the presence of PLACEHOLDER, which indicates that there is a join
+        if "PLACEHOLDER" in line:
+            replacement_string = ""
+
+            # Check for the type of join and use the appropriate keys and names
+            if "Nested Loop Join" in line:
+                key_list = ["HASHJOIN", "MERGEJOIN"]
+                name_list = ["Hash Join", "Merge Join"]
+            elif "Merge Join" in line:
+                key_list = ["HASHJOIN", "NESTLOOP"]
+                name_list = ["Hash Join", "Nested Loop Join"]
+            else:
+                key_list = ["NESTLOOP", "MERGEJOIN"]
+                name_list = ["Nested Loop Join", "Merge Join"]
+            
+            for i, key in enumerate(key_list):
+                # If AQP join cost > QEP join cost
+                if obj.joinTreeCostDict[key][join_count] > 0:
+                    x = obj.joinTreeCostDict[key][join_count] / obj.prefixSumJoin[join_count]
+                    replacement_string += name_list[i]
+                    replacement_string += " is {} times more expensive. ".format("{:.2f}".format(x))
+                # AQP join cost <= QEP join cost
+                else:
+                    # If AQP total cost > QEP total cost
+                    if obj.queryCostDict[key] > obj.estimatedCost:
+                        y = obj.queryCostDict[key] / obj.estimatedCost
+                        replacement_string += name_list[i]
+                        replacement_string += " results in {} times increase in total cost. ".format("{:.2f}".format(y))
+                    else:
+                        replacement_string += "generic annotation"
+            
+            join_count += 1
+            new_output.append(line.replace("PLACEHOLDER", replacement_string))
+        else:
+            new_output.append(line)
+
+    return new_output
 
 # TODO@darren: Change to include different connectors (different from wlee)
-CONNECTORS = ["After that, ", "Then, ", "Next, ", "Subsequently, "]
+# CONNECTORS = ["After that, ", "Then, ", "Next, ", "Subsequently, "]
 
 # Get random word to connect two sentences together
-def getConnector(isStart=False):
-    if isStart:
-        # TODO@darren: Remember to change this lol
-        return "In the beninging, "
+# def getConnector(isStart=False):
+#     if isStart:
+#         # TODO@darren: Remember to change this lol
+#         return "In the beninging, "
 
-    return random.choice(CONNECTORS)
+#     return random.choice(CONNECTORS)
 
 # Function to start the plan
-def startPlan(plan, isStart=False):
-    result = ""
+# def startPlan(plan, isStart=False):
+#     result = ""
 
-    # Checking for InitPlan. # TODO@darren: figure out what this shit is 
-    if "Parent Relationship" in plan:
-        if plan["Parent Relationship"] == "InitPlan":
-            result = getConnector(isStart)
-            result += "The " + plan["Node Type"]
-            result += " is the root node??? Not sure what this is yet"
+#     # Checking for InitPlan. # TODO@darren: figure out what this shit is 
+#     if "Parent Relationship" in plan:
+#         if plan["Parent Relationship"] == "InitPlan":
+#             result = getConnector(isStart)
+#             result += "The " + plan["Node Type"]
+#             result += " is the root node??? Not sure what this is yet"
 
-    return result
+#     return result

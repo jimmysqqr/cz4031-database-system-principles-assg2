@@ -3,14 +3,15 @@ Generic Node Processor
 """
 import annotation
 
-def generic(plan, isStart=False):
+def generic(plan, output):
     # Process unknown node type
-    output = annotation.getConnector(isStart)
+    # output = annotation.getConnector(isStart)
 
-    output += "perform " + plan["Node Type"] + ". "
+    output_string = "Perform " + plan["Node Type"] + ". "
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            output += " " + annotation.processPlan(child)
+            output_string += " " + annotation.processPlan(child)
 
-    return output
+    output.append(output_string)
+    return 

@@ -4,15 +4,14 @@ Nested Loop Node Processor
 
 import annotation
 
-def nested_loop(plan, isStart=False):
+def nested_loop(plan, output):
     # Process Nested Loop node type
-    output = ""
+    output_string = ""
 
-    tmp = annotation.processPlan(plan["Plans"][0], isStart)
-    output += tmp + ""
-    tmp = annotation.processPlan(plan["Plans"][1])
-    output += tmp + ""
+    annotation.processPlan(plan["Plans"][0], output)
+    annotation.processPlan(plan["Plans"][1], output)
 
-    output += "Next, Nested Loop join is used to join these 2 relations because... (This is where the QEP comes in). "
+    output_string += "Next, Nested Loop Join is used to join these 2 relations because PLACEHOLDER"
 
-    return output
+    output.append(output_string)
+    return
