@@ -33,7 +33,7 @@ class PlanTraverser:
         self.Hash_Join = hash_join.hash_join
         self.Limit = limit.limit
         self.Merge_Join = merge_join.merge_join
-        self.SetOp = setop.setop
+        self.SetOp = setop.set_op
         self.Sort = sort.sort
         self.Materialize = materialize.materialize
         self.Aggregate = aggregate.aggregate
