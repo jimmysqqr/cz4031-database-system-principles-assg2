@@ -2,6 +2,7 @@ from preprocessing import DBConnection
 from annotation import processPlan
 from annotation import processCosts
 from getpass import getpass
+import json
 
 
 class Application():
@@ -44,7 +45,7 @@ class Application():
             select p_brand from part where p_size > 20;
         """
 
-        plan = obj.getQueryPlan(testQuery2)
+        plan = obj.getQueryPlan(group2)
         obj.getAltQueryPlans()
 
         # These attributes for the diff in cost of the whole query plans
@@ -68,7 +69,7 @@ class Application():
 
         obj.closeConnection()
 
-        #print(json.dumps(plan, indent=4))
+        # print(json.dumps(plan, indent=4))
 
         # Initialize the output as a list, which will get filled with annotations. The list items are displayed on GUI in point form
         output = []
