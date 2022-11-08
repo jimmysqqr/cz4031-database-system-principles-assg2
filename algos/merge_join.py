@@ -19,6 +19,7 @@ def merge_join(plan, isStart):
 
     if "Join Type" == "Semi":
         output = output + " however on the left relation's row is returned."
+        
     else:
         output = output + "."
 
