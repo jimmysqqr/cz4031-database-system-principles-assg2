@@ -1,25 +1,21 @@
-# sort algorithm
+"""
+Sort Node Processor
+"""
 
 import annotation
 
-def sort(plan, isStart):
-    output = annotation.getConnector(isStart)
-
+def sort(plan, output):
+    # Process Sort node type
     if "Plans" in plan:
         for child in plan["Plans"]:
-            temp = annotation.processPlan(child, isStart)
-            output = output + temp + " "
-
-            if isStart:
-                isaStart = False
+            annotation.processPlan(child, output)
 
     if plan["Node Type"] == "Sort":
-        output = output + annotation.getConnector(isStart)
-        output = output + "Output results is sorted based on attribute "
+        output_string = "Output results are sorted based on attribute "
 
         if "DESC" in str(plan["Sort Key"]):
-            output = output + str(plan["Sort Key"]).replace("DESC", "") + " in descending order."
+            output_string += str(plan["Sort Key"]).replace("DESC", "") + " in descending order."
         else:
-            output = output + str(plan["Sort Key"]) + "."
-
-    return output
+            output_string += str(plan["Sort Key"]) + " in ascending order."
+    output.append(output_string)
+    return
