@@ -27,7 +27,7 @@ class Application():
         obj = DBConnection(host="localhost", port="5432",
                            dbname="TPC-H", user="postgres", password=password)
 
-        # testQuery1 = "select c_custkey from customer;"
+        testQuery1 = "select distinct p_size from part order by p_size;"
         testQuery2 = "select p_name, s_name from part, supplier, partsupp where ps_suppkey = s_suppkey and ps_partkey = p_partkey and ps_availqty >1000 and s_acctbal > 100000 and p_size = 10;"
         # testQuery3 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
 
@@ -45,7 +45,7 @@ class Application():
             select p_brand from part where p_size > 20;
         """
 
-        plan = obj.getQueryPlan(group2)
+        plan = obj.getQueryPlan(testQuery1)
         obj.getAltQueryPlans()
 
         # These attributes for the diff in cost of the whole query plans

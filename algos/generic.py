@@ -5,13 +5,11 @@ import annotation
 
 def generic(plan, output):
     # Process unknown node type
-    # output = annotation.getConnector(isStart)
-
     output_string = "Perform " + plan["Node Type"] + ". "
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            output_string += " " + annotation.processPlan(child)
+            annotation.processPlan(child, output)
 
     output.append(output_string)
     return 
