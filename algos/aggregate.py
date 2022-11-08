@@ -35,7 +35,7 @@ def aggregate(plan, output):
             output_string += "All rows are hashed and grouped based on the keys: ("
             for key in plan["Group Key"]:
                 output_string += key.replace("::text", "") + ", "
-            output_string = output[:-2] + ")"
+            output_string = output_string[:-2] + ")"
         output_string += ", then the desired row of each group is aggregated and outputted."
         output.append(output_string)
         return

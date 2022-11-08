@@ -32,9 +32,9 @@ class Application():
         # testQuery3 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
 
         # Read in a query from one of the sql files in /sample_queries
-        # fd = open("sample_queries/2.sql", "r")
-        # testQuery = fd.read()
-        # fd.close()
+        fd = open("sample_queries/1.sql", "r")
+        testQuery = fd.read()
+        fd.close()
 
         group1 = """
             SELECT p_brand FROM part group by p_brand
@@ -45,7 +45,7 @@ class Application():
             select p_brand from part where p_size > 20;
         """
 
-        plan = obj.getQueryPlan(testQuery1)
+        plan = obj.getQueryPlan(testQuery)
         obj.getAltQueryPlans()
 
         # These attributes for the diff in cost of the whole query plans
