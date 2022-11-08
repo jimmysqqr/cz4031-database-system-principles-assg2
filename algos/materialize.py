@@ -1,19 +1,18 @@
-# Materialize Algorithm
+"""
+Materialize Node Processor
+"""
 
 import annotation
 
-def materialize(plan, isStart = False):
-    output = ""
+def materialize(plan, output):
+    output_string = ""
 
     if "Plans" in plan:
         for child in plan["Plans"]:
-            temp = annotation.processPlan(child, isStart)
-            output = output + temp + " "
-            if isStart:
-                isStart = False
+            annotation.processPlan(child, output)
 
     if plan["Node Type"] == "Materialize":
-        output = output + annotation.getConnector(isStart)
-        output = output + "Save the results in main memory to reduce latency and disk stroage overhead."
+        output_string += "Materialize the results in main memory to avoid re-computing the values."
 
-    return output
+    output.append(output_string)
+    return
