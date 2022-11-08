@@ -4,13 +4,14 @@ Hash Node Processor
 
 import annotation
 
-def hash(plan, isStart=False):
 
+def hash(plan, output):
+    # Recursive step
     if "Plans" in plan:
-        output = annotation.processPlan(plan['Plans'][0], isStart)
-    else:
-        output = annotation.getConnector(isStart)
-    
-    output += " Hash index is created on the previous relation."
+        annotation.processPlan(plan['Plans'][0], output)
 
-    return output
+    output_string = "A Hash index is created on the previous relation."
+
+    output.append(output_string)
+
+    return

@@ -17,9 +17,9 @@ class DBConnection:
         self.postOrder = list()
         self.hasJoin = False
         self.estimatedCost = 0
+        self.prefixSumJoin = list()
 
         # For evaluating the representative alternative query plans
-        self.prefixSumJoin = list()
         self.altQueryPlans = list()
         self.queryCostDict = dict()
         self.joinTreeCostDict = dict()
@@ -36,6 +36,7 @@ class DBConnection:
             print("Error while connecting to PostgreSQL: ", error)
             exit()
 
+
     def closeConnection(self):
         """
         Method that closes the connection to PostgreSQL.
@@ -44,6 +45,7 @@ class DBConnection:
             self.cursor.close()
             self.connection.close()
             print("PostgreSQL connection has been closed.")
+
 
     def getQueryPlan(self, query):
         """
@@ -78,6 +80,7 @@ class DBConnection:
 
         return self.queryPlan
 
+
     def getPostOrder(self, queryPlan, result):
         """
         This method performs a post order breadth traversal (DFS) on the query plan (a nested dictionary) and returns a list of the operators in the same order.
@@ -98,16 +101,6 @@ class DBConnection:
 
         return result
 
-    def getOperatorSet(self, postOrder):
-        """
-        This method creates a set of all the various opertors used in the query plan by scanning it's post order traversal.
-        """
-        result = set()
-
-        for op in postOrder:
-            result.add(op[0])
-
-        return result
 
     def getTotalCost(self, postOrder):
         """
@@ -119,6 +112,7 @@ class DBConnection:
             result += op[1]
 
         return result
+
 
     def generatePrefixSumJoin(self):
         """
@@ -143,9 +137,11 @@ class DBConnection:
                 # Check for Gather operators
 
                 result.append(round(currSum, 2))
-                #currSum = 0
+                currSum = 0
+                # Reset the curSum to 0 (This helps isolate the cost of the join operator better)
 
         self.prefixSumJoin = result
+
 
     def evaluateAQP(self, postOrder, key):
         """
@@ -169,13 +165,13 @@ class DBConnection:
                 # Check for Gather operators
 
                 result.append(round(currSum, 2))
-                #currSum = 0
+                currSum = 0
+                # Reset the curSum to 0 (This helps isolate the cost of the join operator better)
 
-        diff = [round(result[i] - self.prefixSumJoin[i], 2) for i in range(len(result))]
-
-        self.joinTreeCostDict[key] = diff
-        # print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
-        # print("Relative increase in cost of join subtrees in AQP: {}".format(diff))
+        #diff = [round(result[i] - self.prefixSumJoin[i], 2) for i in range(len(result))]
+        # Let us not store difference but rather the raw result
+        
+        self.joinTreeCostDict[key] = result
 
 
     def getAltQueryPlans(self):
@@ -226,9 +222,6 @@ class DBConnection:
                 # print(rawOutput)
                 # For debugging, prints the runtime configuration
 
-                #print(f"Alternative Query Plan {i+1}")
-                #print(f"Operators disabled: {j1} and {j2}")
-
                 aqp = self.getPostOrder(self.altQueryPlans[i], [])
                 cost = self.getTotalCost(aqp)
                 # Computing the postorder of the AQP and it's estimated total cost
@@ -236,10 +229,6 @@ class DBConnection:
                 key = list(set(['HASHJOIN', 'MERGEJOIN', 'NESTLOOP']) - set([j1, j2]))[0]
                 self.queryCostDict[key] = cost
                 # Adding the cost to a class dictionary (key is just a protracted way to retrieve the join type!)
-
-                #print(aqp)
-                #print(f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
-                #print(f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
 
                 self.evaluateAQP(aqp, key)
                 # Evaluating the relative increase (or decrease) in cost when the operator is swapped out in the query plan
