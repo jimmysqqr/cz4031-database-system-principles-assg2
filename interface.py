@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
         self.setFixedSize(640, 480)
         self.initUI()
 
-    def tree_display(self):
+    def treeDisplay(self):
         f = graphviz.Digraph(filename = "hello.gv")
         names = ["A","B","C","D","E","F","G","H"]
         positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
@@ -24,45 +24,39 @@ class MainWindow(QMainWindow):
         
         f.render("temp_img",format="png", view=False)
 
-        text=open('test.txt', encoding="utf8").read()
-        self.el1.setText(text)
-
         self.im = QPixmap("./temp_img.png")
         self.imgLabel.setPixmap(self.im)
 
-    def get_input(self):
-        self.el2.setText(self.line.text())
+    def annotateQuery(self):
+        self.el1.setText(self.textEdit.toPlainText())
 
     def initUI(self):
         self.setWindowTitle("My App")
         layout = QtWidgets.QVBoxLayout()
 
 
-
         # Create a form layout for the label and line edit
         topLayout = QtWidgets.QFormLayout()
         # Add a label and a line edit to the form layout
-        self.line = QtWidgets.QLineEdit(self)
+        self.textEdit = QtWidgets.QTextEdit(self)
         self.queryLabel = QtWidgets.QLabel(self)
-        self.queryLabel.setText('Query:')
-        topLayout.addRow(self.queryLabel, self.line)
-        layout.addLayout(topLayout)
+        self.queryLabel.setText('Enter query here:')
+        layout.addWidget(self.queryLabel)
+        layout.addWidget(self.textEdit)
 
-        topBtn = QtWidgets.QPushButton('Top')
+        topBtn = QtWidgets.QPushButton('Annotate Query')
         layout.addWidget(topBtn)
-        topBtn.clicked.connect(self.tree_display)
+        topBtn.clicked.connect(self.annotateQuery)
 
-        botBtn = QtWidgets.QPushButton('Bottom')
-        layout.addWidget(botBtn)
-        botBtn.clicked.connect(self.get_input)
 
 
         self.el1 = QtWidgets.QTextEdit(self)
         self.el1.setReadOnly(True)
         layout.addWidget(self.el1)
 
-        self.el2 = QtWidgets.QTextEdit(self)
-        layout.addWidget(self.el2)
+        botBtn = QtWidgets.QPushButton('Visualize Query Plan')
+        layout.addWidget(botBtn)
+        botBtn.clicked.connect(self.treeDisplay)
 
         self.imgLabel = QtWidgets.QLabel(self)
         self.im = QPixmap("./Empty.png")
@@ -83,9 +77,9 @@ class MainWindow(QMainWindow):
     
 
 
-app = QApplication([])
-app.setStyle('Fusion')
-window = MainWindow()
-window.show()
+# app = QApplication([])
+# app.setStyle('Fusion')
+# window = MainWindow()
+# window.show()
 
-app.exec()
+# app.exec()
