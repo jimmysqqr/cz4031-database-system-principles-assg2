@@ -1,3 +1,5 @@
+from interface import MainWindow
+from PyQt6.QtWidgets import QApplication
 from preprocessing import DBConnection
 from annotation import processPlan
 from annotation import processCosts
@@ -25,10 +27,17 @@ class Application():
         password = getpass("Please input your PostgreSQL password: ")
 
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="postgres", password=password)
+                           dbname="TPC-H", user="terry", password=password)
+
+       
+        app = QApplication([])
+        app.setStyle('Fusion')
+        window = MainWindow()
+        window.show()
+        app.exec()
 
         # Read in a query from one of the sql files in /sample_queries
-        fd = open("sample_queries/2.sql", "r")
+        fd = open("sample_queries/1.sql", "r")
         testQuery = fd.read()
         fd.close()
 
@@ -76,6 +85,7 @@ class Application():
                 revenue desc;
         """
 
+    
         plan = obj.getQueryPlan(testQuery)
         obj.getAltQueryPlans()
 
