@@ -10,8 +10,7 @@ def index_scan(plan, output):
     output_string = ""
     # If node type is "Index Scan"
     if plan["Node Type"] == "Index Scan" or plan["Node Type"] == "Index Only Scan":
-        output_string += "Perform Index Scan on relation: " + \
-            plan["Relation Name"]
+        output_string += "Perform Index Scan on relation: " + plan["Relation Name"]
         output_string += ", with index: " + plan["Index Name"]
 
         # Check if there is a condition in the index scan
