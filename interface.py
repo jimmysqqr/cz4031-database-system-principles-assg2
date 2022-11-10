@@ -1,34 +1,71 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow
+import json
+from PyQt6.QtWidgets import QApplication, QMainWindow, QScrollArea
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QPixmap
 from PyQt6 import QtWidgets, QtCore
+from annotation import processCosts, processPlan
 import graphviz
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,obj):
         super(MainWindow, self).__init__()
-        self.setFixedSize(640, 480)
+        self.dbObj = obj
+        self.setFixedSize(1200, 700)
         self.initUI()
+
+    def substring_before(self,s, delim):
+        return s.partition(delim)[0]
 
     def treeDisplay(self):
         f = graphviz.Digraph(filename = "hello.gv")
-        names = ["A","B","C","D","E","F","G","H"]
-        positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
-        for name, position in zip(names, positions):
-            f.node(name, position)
+
+        query = self.textEdit.toPlainText()
+        plan = self.dbObj.getQueryPlan(query)
+        adjList = self.dbObj.getAdjList(plan, {})[0]
+        self.dbObj.nodeCount = 1
+        print(json.dumps(adjList, indent=4))
+        print(self.dbObj.nodeList)
+        for node in self.dbObj.nodeList:
+            f.node(node,self.substring_before(node,"#"))
+
+        for annotate in adjList:
+            if len(adjList[annotate]) != 0 :
+                for annotateString in adjList[annotate]:
+                    f.edge(annotate,annotateString)
+
+
+        # names = ["A","B","C","D","E","F","G","H"]
+        # positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
+        # for name, position in zip(names, positions):
+        #     f.node(name, position)
         
-        #Specify edges
-        f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
-        f.edge("B","D"); f.edge("B","E") #Team A relationship
-        f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
+        # #Specify edges
+        # f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
+        # f.edge("B","D"); f.edge("B","E") #Team A relationship
+        # f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
         
         f.render("temp_img",format="png", view=False)
 
-        self.im = QPixmap("./temp_img.png")
+        self.im = QPixmap("./temp_img.png").scaledToHeight(1900)
         self.imgLabel.setPixmap(self.im)
 
     def annotateQuery(self):
-        self.el1.setText(self.textEdit.toPlainText())
+        #to get the text use
+        query = self.textEdit.toPlainText()
+        plan = self.dbObj.getQueryPlan(query)
+        output = []
+        processPlan(plan, output)
+
+        new_output = processCosts(output, self.dbObj)
+
+        data=[]
+        for i,x  in enumerate(new_output):
+            data.append(str(i+1)+ '.     ' + x)
+            self.el1.setText("\n".join(data))
+        # for k in new_output():
+        #     print("AQP with {} enabled: ".format(k))
+        # self.el1.setText(json.dumps(new_output, indent=4))
+        
 
     def initUI(self):
         self.setWindowTitle("My App")
@@ -59,13 +96,17 @@ class MainWindow(QMainWindow):
         botBtn.clicked.connect(self.treeDisplay)
 
         self.imgLabel = QtWidgets.QLabel(self)
-        self.im = QPixmap("./Empty.png")
+        self.im = QPixmap("./Empty.png",)
         self.imgLabel.setScaledContents(True)
         self.imgLabel.setPixmap(self.im)
 
+        self.imgScrollArea = QScrollArea()
+        self.imgScrollArea.setWidget(self.imgLabel)
+        self.imgScrollArea.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.imgScrollArea.setFixedWidth(1190)
 
         self.grid = QtWidgets.QGridLayout()
-        self.grid.addWidget(self.imgLabel,10,10)
+        self.grid.addWidget(self.imgScrollArea,10,10,alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(self.grid)
         
         

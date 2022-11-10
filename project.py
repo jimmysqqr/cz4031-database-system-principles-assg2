@@ -32,7 +32,7 @@ class Application():
        
         app = QApplication([])
         app.setStyle('Fusion')
-        window = MainWindow()
+        window = MainWindow(obj)
         window.show()
         app.exec()
 

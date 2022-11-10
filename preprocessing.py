@@ -24,6 +24,7 @@ class DBConnection:
         self.altQueryPlans = list()
         self.queryCostDict = dict()
         self.joinTreeCostDict = dict()
+        self.nodeList = list()
 
         try:
             # Connecting to the database and initializing the cursor as class variables
@@ -128,6 +129,8 @@ class DBConnection:
         else:
             # name the parent node, increment the count
             planNodeType = f"{queryPlan['Node Type']}#{self.nodeCount}"
+            if planNodeType not in self.nodeList:
+                self.nodeList.append(planNodeType)
 
             # keep track of count in this recursion iteration
             curIterCount = self.nodeCount 
@@ -140,6 +143,8 @@ class DBConnection:
 
                 # name the child node, increment the count
                 subplanNodeType = f"{subplan['Node Type']}#{nextIterCount}"
+                if subplanNodeType not in self.nodeList:
+                    self.nodeList.append(subplanNodeType)
                 
                 # add the child node to its parent node in the adjacency list
                 if planNodeType in result:
