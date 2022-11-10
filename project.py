@@ -41,6 +41,12 @@ class Application():
         testQuery = fd.read()
         fd.close()
 
+        group1 = """
+            SELECT p_brand FROM part group by p_brand
+        """
+        
+        hash1 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
+
         cte1 = """
             with cte1 as (
                 select * from customer
@@ -49,45 +55,21 @@ class Application():
             )
             select * from cte1 C, cte2 O where C.c_custkey = O.o_custkey;
         """
-        cte2 = """
-            with cte1 as (
-                select n_name, n_nationkey, n_regionkey
-                from nation
-            ), cte2 as (
-                select o_custkey, o_orderkey from orders, cte1
-                where o_orderdate >= '1994-01-01'
-                and o_orderdate < '1995-01-01'
-                and n_name = 'INDONESIA' or n_name = 'INDIA'
-            )
-            select
-                n_name,
-                sum(l_extendedprice * (1 - l_discount)) as revenue
-                from
-                customer,
-                cte2,
-                lineitem,
-                supplier,
-                cte1,
-                region
-                where
-                c_custkey = o_custkey
-                and l_orderkey = o_orderkey
-                and l_suppkey = s_suppkey
-                and c_nationkey = s_nationkey
-                and s_nationkey = n_nationkey
-                and n_regionkey = r_regionkey
-                and r_name = 'ASIA'
-                and c_acctbal > 10
-                and s_acctbal > 20
-                group by
-                n_name
-                order by
-                revenue desc;
-        """
 
+        append4 = """
+            select p_brand from part where p_size < 2
+            except
+            select p_brand from part where p_size > 20;
+        """
     
         plan = obj.getQueryPlan(testQuery)
         obj.getAltQueryPlans()
+
+        # print(json.dumps(plan, indent=4))
+        adjList = obj.getAdjList(plan, {})[0]
+        obj.nodeCount = 1
+        print(json.dumps(adjList, indent=4))
+        # print(obj.postOrder)
 
         # These attributes for the diff in cost of the whole query plans
         print("Cost of QEP: {}".format(obj.estimatedCost))

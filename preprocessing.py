@@ -18,6 +18,7 @@ class DBConnection:
         self.hasJoin = False
         self.estimatedCost = 0
         self.prefixSumJoin = list()
+        self.nodeCount = 1
 
         # For evaluating the representative alternative query plans
         self.altQueryPlans = list()
@@ -101,6 +102,54 @@ class DBConnection:
 
         return result
 
+    def getAdjList(self, queryPlan, result):
+        """
+        This method performs a post order breadth traversal on the query plan (a nested dictionary) and returns an adjacency list of operators as a dict type
+            { parent node : [child node 1, child node 2, ...] }
+
+        We use a count to keep track of the number of nodes visited and append it to the end of each node to make it unique 
+        (else, there would be multiple Seq Scan's will be taken as the same node, when actually they are distinct Seq Scan's in the QEP)
+            {
+                "Hash Join#1" : ["Seq Scan#2", "Aggregate#3"], 
+                "Aggregate#3" : ["Sort#4", "Seq Scan#5"]
+            }
+        """
+        # print("\nNew Iteration\n")
+        # print(f"self.nodeCount={self.nodeCount}")
+        
+        # leaf node
+        if 'Plans' not in queryPlan:
+            curIterCount = self.nodeCount
+            # print(f"curIterCount={curIterCount}")
+            self.nodeCount += 1
+            return [result, curIterCount]
+
+        # node with child nodes
+        else:
+            # name the parent node, increment the count
+            planNodeType = f"{queryPlan['Node Type']}#{self.nodeCount}"
+
+            # keep track of count in this recursion iteration
+            curIterCount = self.nodeCount 
+            self.nodeCount += 1
+
+            # DFS: keep traversing until leaf node is reached    
+            for subplan in queryPlan['Plans']:                
+                nextIterCount = self.getAdjList(subplan, result)[1]
+                # print(f"nextIterCount={nextIterCount}")
+
+                # name the child node, increment the count
+                subplanNodeType = f"{subplan['Node Type']}#{nextIterCount}"
+                
+                # add the child node to its parent node in the adjacency list
+                if planNodeType in result:
+                    result[planNodeType].append(subplanNodeType)
+                else:
+                    result[planNodeType] = [subplanNodeType]
+                # print(result)
+
+            # return curIterCount (OR, in the 1st iteration, return the final result)
+            return [result, curIterCount]
 
     def getTotalCost(self, postOrder):
         """
@@ -189,10 +238,13 @@ class DBConnection:
 
         """
         self.postOrder = self.getPostOrder(self.queryPlan, [])
+        # self.adjList = self.getAdjList(self.queryPlan, {})
         self.estimatedCost = self.getTotalCost(self.postOrder)
 
         print("Original QEP")
         print(self.postOrder)
+        # print("Adjacency List")
+        # print(self.adjList)
         print(f"Total Estimated Cost = {round(self.estimatedCost, 2)}")
         print()
 
