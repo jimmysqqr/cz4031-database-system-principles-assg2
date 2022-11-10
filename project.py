@@ -4,6 +4,7 @@ from preprocessing import DBConnection
 from annotation import processPlan
 from annotation import processCosts
 from getpass import getpass
+import os
 import json
 
 
@@ -27,9 +28,11 @@ class Application():
         password = getpass("Please input your PostgreSQL password: ")
 
         obj = DBConnection(host="localhost", port="5432",
-                           dbname="TPC-H", user="terry", password=password)
+                           dbname="TPC-H", user="postgres", password=password)
 
-       
+        # Remember to change this path appropriately. I had to add this otherwise Graphviz doesn't work for me
+        os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
+
         app = QApplication([])
         app.setStyle('Fusion')
         window = MainWindow()
@@ -72,20 +75,20 @@ class Application():
         # print(obj.postOrder)
 
         # These attributes for the diff in cost of the whole query plans
-        print("Cost of QEP: {}".format(obj.estimatedCost))
-        for k,v in obj.queryCostDict.items():
-            print("AQP with {} enabled: ".format(k))
-            print("Total cost of AQP: {}".format(v))
+        # print("Cost of QEP: {}".format(obj.estimatedCost))
+        # for k,v in obj.queryCostDict.items():
+        #     print("AQP with {} enabled: ".format(k))
+        #     print("Total cost of AQP: {}".format(v))
         #print(f"Increase in Estimated Cost = {round(cost-self.estimatedCost, 2)}")
         #print(f"Relative increase in estimated cost = {round((cost-self.estimatedCost)/self.estimatedCost, 2)}")
 
         # These attributes for the diff in cost of each join sub tree (idea is their relative difference approximates the increase/decrease in cost!)
-        print("Cost of subtrees in QEP: ")
-        print(obj.prefixSumJoin)
+        # print("Cost of subtrees in QEP: ")
+        # print(obj.prefixSumJoin)
 
-        for k, v in obj.joinTreeCostDict.items():
-            print("AQP with {} enabled: ".format(k))
-            print("Relative increase in cost of subtrees: {}".format(v))
+        # for k, v in obj.joinTreeCostDict.items():
+        #     print("AQP with {} enabled: ".format(k))
+        #     print("Relative increase in cost of subtrees: {}".format(v))
         # print(obj.joinTreeCostDict.keys())
         # print("Cost of join subtrees in QEP: {}".format(self.prefixSumJoin))
         # print("Relative increase in cost of join subtrees in AQP: {}".format(diff))

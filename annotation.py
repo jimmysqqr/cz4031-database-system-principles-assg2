@@ -32,6 +32,7 @@ class PlanTraverser:
         self.Nested_Loop = nested_loop.nested_loop
         self.Seq_Scan = sequential_scan.sequential_scan
         self.Index_Scan = index_scan.index_scan
+        self.Index_Only_Scan = index_scan.index_scan
         self.Hash_Join = hash_join.hash_join
         self.Limit = limit.limit
         self.Merge_Join = merge_join.merge_join

@@ -1,23 +1,23 @@
-# Hash Join
+"""
+Hash Join Node Processor
+"""
 
 import annotation
 
-def hash_join(plan, isStart = False):
+def hash_join(plan, output):
     # Process Hash Join
+    # Process child nodes first
+    annotation.processPlan(plan["Plans"][1], output)
+    annotation.processPlan(plan["Plans"][0], output)
 
-    output = ""
-
-    temp = annotation.processPlan(plan["Plans"][1], isStart)
-    output = output + temp + ""
-    temp = annotation.processPlan(plan["Plans"][0])
-    output = output + temp + ""
-
-    output = output + "Next, Hash Join the 2 results from previous operations "
-    output = output + plan["Join Type"] + "Join"
+    output_string = "Next, Hash Join the 2 results from previous operations. "
+    output_string += plan["Join Type"] + "Join is used"
 
     if "Hash Cond" in plan:
-        output = output + " with the condition " + plan["Hash Cond"].replace("::text", "") + "."
+        output_string += " with the condition " + plan["Hash Cond"].replace("::text", "") + ". "
     else:
-        output = output + "."
+        output_string += ". "
 
-    return output
+    output_string += "Hash Join is used for the join because PLACEHOLDER"
+    output.append(output_string)
+    return
