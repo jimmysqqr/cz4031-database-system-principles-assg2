@@ -11,7 +11,7 @@ def nested_loop(plan, output):
     annotation.processPlan(plan["Plans"][0], output)
     annotation.processPlan(plan["Plans"][1], output)
 
-    output_string += "Next, Nested Loop Join is used to join these 2 relations because PLACEHOLDER"
+    output_string += "Next, Nested Loop Join is used for the join because PLACEHOLDER"
 
     output.append(output_string)
     return

@@ -1,26 +1,22 @@
-# Merge Join Algorithm
+"""
+Merge Join Node Processor
+"""
 
 import annotation
 
-def merge_join(plan, isStart):
-    output = ""
-
+def merge_join(plan, output):
+    # Process the child nodes first
     if "Plans" in plan:
         for child in plan["Plans"]:
-            output = output + annotation.processPlan(child, isStart) + " "
-            if isStart:
-                isStart = False
+            annotation.processPlan(child, output)
 
-    output = output + annotation.getConnector(isStart)
-    output = output + "Merge Join is performed on the output"
+    output_string = "Merge Join is performed on the output"
 
     if "Merge Cond" in plan:
-        output = output + " with condition " + plan["Merge Cond"].replace("::text", "")
-
-    if "Join Type" == "Semi":
-        output = output + " however on the left relation's row is returned."
-        
+        output_string += " with condition " + plan["Merge Cond"].replace("::text", "") + ". "
     else:
-        output = output + "."
-
-    return output
+        output = output + ". "
+        
+    output_string += "Merge Join is used for the join because PLACEHOLDER"
+    output.append(output_string)
+    return
