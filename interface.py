@@ -13,18 +13,29 @@ class MainWindow(QMainWindow):
         self.setFixedSize(1200, 700)
         self.initUI()
 
+
+    """
+    Function to separate the # from the query names E.g.(Sequentialscan#1)
+    """
     def substring_before(self,s, delim):
         return s.partition(delim)[0]
 
+
+    """
+    Function to display the traversal tree
+    """
     def treeDisplay(self):
         f = graphviz.Digraph(filename = "hello.gv")
 
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
         adjList = self.dbObj.getAdjList(plan, {})[0]
+
+        # orderList = self.dbObj.getPostOrder(plan, {})
+        # print(orderList)
+
         self.dbObj.nodeCount = 1
-        print(json.dumps(adjList, indent=4))
-        print(self.dbObj.nodeList)
+
         for node in self.dbObj.nodeList:
             f.node(node,self.substring_before(node,"#"))
 
@@ -49,6 +60,9 @@ class MainWindow(QMainWindow):
         self.im = QPixmap("./temp_img.png").scaledToHeight(1900)
         self.imgLabel.setPixmap(self.im)
 
+    """
+    Function to call annotate query function
+    """
     def annotateQuery(self):
         #to get the text use
         query = self.textEdit.toPlainText()
@@ -62,9 +76,6 @@ class MainWindow(QMainWindow):
         for i,x  in enumerate(new_output):
             data.append(str(i+1)+ '.     ' + x)
             self.el1.setText("\n".join(data))
-        # for k in new_output():
-        #     print("AQP with {} enabled: ".format(k))
-        # self.el1.setText(json.dumps(new_output, indent=4))
         
 
     def initUI(self):
@@ -81,37 +92,45 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.queryLabel)
         layout.addWidget(self.textEdit)
 
+
+        # Annotate Query button
         topBtn = QtWidgets.QPushButton('Annotate Query')
         layout.addWidget(topBtn)
         topBtn.clicked.connect(self.annotateQuery)
 
 
-
+        # Annotate Query text display
         self.el1 = QtWidgets.QTextEdit(self)
         self.el1.setReadOnly(True)
         layout.addWidget(self.el1)
 
+        # Visualize Query Plan button
         botBtn = QtWidgets.QPushButton('Visualize Query Plan')
         layout.addWidget(botBtn)
         botBtn.clicked.connect(self.treeDisplay)
 
+        # Image Label for displaying tree
         self.imgLabel = QtWidgets.QLabel(self)
         self.im = QPixmap("./Empty.png",)
         self.imgLabel.setScaledContents(True)
         self.imgLabel.setPixmap(self.im)
 
+        # Scroll area to have the image label contained inside
         self.imgScrollArea = QScrollArea()
         self.imgScrollArea.setWidget(self.imgLabel)
         self.imgScrollArea.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.imgScrollArea.setFixedWidth(1190)
 
+        # Grid layout for the Image label
         self.grid = QtWidgets.QGridLayout()
         self.grid.addWidget(self.imgScrollArea,10,10,alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(self.grid)
         
         
+        # Sets final layout to widget
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
+
         # Set the central widget of the Window.
         self.setCentralWidget(widget)
 
