@@ -33,11 +33,11 @@ class Application():
         # Remember to change this path appropriately. I had to add this otherwise Graphviz doesn't work for me
         os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin/'
 
-        # app = QApplication([])
-        # app.setStyle('Fusion')
-        # window = MainWindow()
-        # window.show()
-        # app.exec()
+        app = QApplication([])
+        app.setStyle('Fusion')
+        window = MainWindow()
+        window.show()
+        app.exec()
 
         # Read in a query from one of the sql files in /sample_queries
         fd = open("sample_queries/1.sql", "r")
