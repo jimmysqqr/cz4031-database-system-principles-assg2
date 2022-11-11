@@ -9,5 +9,5 @@ from
 	part
 where
 	l_partkey = p_partkey
-	and l_shipdate >= date ':1'
-	and l_shipdate < date ':1' + interval '1' month;
+	and l_shipdate >= '1996-03-13'
+	and l_shipdate < '1996-04-13'

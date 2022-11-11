@@ -120,8 +120,9 @@ class DBConnection:
         
         # leaf node
         if 'Plans' not in queryPlan:
+            if self.nodeCount == 1:
+                self.nodeList.append(f"{queryPlan['Node Type']}#{self.nodeCount}")
             curIterCount = self.nodeCount
-            # print(f"curIterCount={curIterCount}")
             self.nodeCount += 1
             return [result, curIterCount]
 
@@ -139,7 +140,6 @@ class DBConnection:
             # DFS: keep traversing until leaf node is reached    
             for subplan in queryPlan['Plans']:                
                 nextIterCount = self.getAdjList(subplan, result)[1]
-                # print(f"nextIterCount={nextIterCount}")
 
                 # name the child node, increment the count
                 subplanNodeType = f"{subplan['Node Type']}#{nextIterCount}"
@@ -151,7 +151,6 @@ class DBConnection:
                     result[planNodeType].append(subplanNodeType)
                 else:
                     result[planNodeType] = [subplanNodeType]
-                # print(result)
 
             # return curIterCount (OR, in the 1st iteration, return the final result)
             return [result, curIterCount]

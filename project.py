@@ -72,7 +72,7 @@ class Application():
         adjList = obj.getAdjList(plan, {})[0]
         obj.nodeCount = 1
         print(json.dumps(adjList, indent=4))
-        # print(obj.postOrder)
+        print(obj.nodeList)
 
         # These attributes for the diff in cost of the whole query plans
         # print("Cost of QEP: {}".format(obj.estimatedCost))
