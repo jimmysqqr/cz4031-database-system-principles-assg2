@@ -57,8 +57,11 @@ class MainWindow(QMainWindow):
         
         f.render("temp_img",format="png", view=False)
 
-        self.im = QPixmap("./temp_img.png").scaledToHeight(1900)
+        self.im = QPixmap("./temp_img.png")
         self.imgLabel.setPixmap(self.im)
+        self.imgLabel.setFixedHeight(self.im.size().height())
+        self.imgLabel.setFixedWidth(self.im.size().width())
+
 
     """
     Function to call annotate query function
@@ -112,7 +115,7 @@ class MainWindow(QMainWindow):
         # Image Label for displaying tree
         self.imgLabel = QtWidgets.QLabel(self)
         self.im = QPixmap("./Empty.png",)
-        self.imgLabel.setScaledContents(True)
+        # self.imgLabel.setScaledContents(True)
         self.imgLabel.setPixmap(self.im)
 
         # Scroll area to have the image label contained inside
