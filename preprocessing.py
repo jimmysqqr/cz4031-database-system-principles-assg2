@@ -69,16 +69,21 @@ class DBConnection:
 
         Have used FORMAT JSON for now, maybe can add ANALYZE and VERBOSE?
         """
-        self.query = query
-        self.cursor.execute(
-            f"EXPLAIN (FORMAT JSON) {self.query}")
+        try:
+            self.query = query
+            self.cursor.execute(
+                f"EXPLAIN (FORMAT JSON) {self.query}")
 
-        # Need to peel away the wrappers from the raw output
-        rawOutput = self.cursor.fetchall()
-        plan = rawOutput[0][0][0]['Plan']
-        self.queryPlan = plan
-
-        return self.queryPlan
+            # Need to peel away the wrappers from the raw output
+            rawOutput = self.cursor.fetchall()
+            plan = rawOutput[0][0][0]['Plan']
+            self.queryPlan = plan
+            
+            return self.queryPlan
+        
+        except Exception as e:
+            return e
+            return "ERROR: Please check your query syntax."
 
     def getPostOrder(self, queryPlan, result):
         """

@@ -5,6 +5,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6 import QtWidgets, QtCore
 from annotation import processCosts, processPlan
 import graphviz
+import psycopg2
 
 
 class MainWindow(QMainWindow):
@@ -14,27 +15,28 @@ class MainWindow(QMainWindow):
         self.setFixedSize(1200, 700)
         self.initUI()
 
-    """
-    Function to separate the # from the query names E.g.(Sequentialscan#1)
-    """
-
     def substring_before(self, s, delim):
+        """
+        Function to separate the # from the query names E.g.(Sequentialscan#1)
+        """
         return s.partition(delim)[0]
 
-    """
-    Function to display the traversal tree
-    """
-
     def treeDisplay(self):
-        f = graphviz.Digraph(filename="hello.gv")
+        """
+        Function to display the traversal tree
+        """
+        f = graphviz.Digraph()
 
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
+
+        if isinstance(plan, psycopg2.errors.SyntaxError):
+            msg = str(plan).split("\n")
+            self.el1.setText("ERROR: Tree visualisation failed. Please check your query.\n" + msg[0])
+            return
+
         adjList = self.dbObj.getAdjList(plan, {})[0]
         nodeList = self.dbObj.nodeList
-
-        # orderList = self.dbObj.getPostOrder(plan, {})
-        # print(orderList)
 
         self.dbObj.nodeCount = 1
         self.dbObj.nodeList = list()
@@ -46,16 +48,6 @@ class MainWindow(QMainWindow):
             if len(adjList[annotate]) != 0:
                 for annotateString in adjList[annotate]:
                     f.edge(annotate, annotateString)
-
-        # names = ["A","B","C","D","E","F","G","H"]
-        # positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
-        # for name, position in zip(names, positions):
-        #     f.node(name, position)
-
-        # #Specify edges
-        # f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
-        # f.edge("B","D"); f.edge("B","E") #Team A relationship
-        # f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
 
         f.render("temp_img", format="png", view=False)
 
@@ -70,15 +62,22 @@ class MainWindow(QMainWindow):
         """
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
-        self.dbObj.getAltQueryPlans()
+
+        if isinstance(plan, psycopg2.errors.SyntaxError):
+            msg = str(plan).split("\n")
+            self.el1.setText("ERROR: Annotation failed. Please check your query.\n" + msg[0])
+            return
+
         # Remember to retrieve the alternate query plans!
+        self.dbObj.getAltQueryPlans()
+
         output = []
         processPlan(plan, output)
         new_output = processCosts(output, self.dbObj)
 
-        data = []
-        for i, x in enumerate(new_output):
-            data.append(str(i+1) + '.     ' + x)
+        data=[]
+        for i,x  in enumerate(new_output):
+            data.append(str(i+1)+ '.     ' + x)
             self.el1.setText("\n".join(data))
 
     def initUI(self):

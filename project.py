@@ -65,14 +65,14 @@ class Application():
             select p_brand from part where p_size > 20;
         """
 
-        plan = obj.getQueryPlan(testQuery)
-        obj.getAltQueryPlans()
+        # plan = obj.getQueryPlan(testQuery)
+        # obj.getAltQueryPlans()
 
-        # print(json.dumps(plan, indent=4))
-        adjList = obj.getAdjList(plan, {})[0]
-        obj.nodeCount = 1
-        print(json.dumps(adjList, indent=4))
-        print(obj.nodeList)
+        # # print(json.dumps(plan, indent=4))
+        # adjList = obj.getAdjList(plan, {})[0]
+        # obj.nodeCount = 1
+        # print(json.dumps(adjList, indent=4))
+        # print(obj.nodeList)
 
         # These attributes for the diff in cost of the whole query plans
         # print("Cost of QEP: {}".format(obj.estimatedCost))
@@ -98,11 +98,11 @@ class Application():
         # print(json.dumps(plan, indent=4))
 
         # Initialize the output as a list, which will get filled with annotations. The list items are displayed on GUI in point form
-        output = []
-        processPlan(plan, output)
+        # output = []
+        # processPlan(plan, output)
 
-        new_output = processCosts(output, obj)
-        print(new_output)
+        # new_output = processCosts(output, obj)
+        # print(new_output)
 
 
 if __name__ == '__main__':
