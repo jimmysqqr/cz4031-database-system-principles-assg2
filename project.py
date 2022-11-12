@@ -47,7 +47,7 @@ class Application():
         group1 = """
             SELECT p_brand FROM part group by p_brand
         """
-        
+
         hash1 = "select * from customer C, orders O where C.c_custkey = O.o_custkey;"
 
         cte1 = """
@@ -64,7 +64,7 @@ class Application():
             except
             select p_brand from part where p_size > 20;
         """
-    
+
         plan = obj.getQueryPlan(testQuery)
         obj.getAltQueryPlans()
 
@@ -103,6 +103,7 @@ class Application():
 
         new_output = processCosts(output, obj)
         print(new_output)
-        
+
+
 if __name__ == '__main__':
     Application.main()

@@ -11,7 +11,7 @@ def subquery_scan(plan, output):
         for child in plan["Plans"]:
             annotation.processPlan(child, output)
 
-    output_string += "Do a subquery scan on the output of the sub-query in earlier operations"
+    output_string += "The planner now performs a subquery scan on the output of the sub-query in earlier operations"
 
     # Check if the sequential scan was done with a filter
     if "Filter" in plan:

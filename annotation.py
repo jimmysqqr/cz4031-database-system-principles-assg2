@@ -128,4 +128,3 @@ def processCosts(output, obj):
             new_output.append(line)
 
     return new_output
-

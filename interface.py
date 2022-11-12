@@ -6,26 +6,27 @@ from PyQt6 import QtWidgets, QtCore
 from annotation import processCosts, processPlan
 import graphviz
 
+
 class MainWindow(QMainWindow):
-    def __init__(self,obj):
+    def __init__(self, obj):
         super(MainWindow, self).__init__()
         self.dbObj = obj
         self.setFixedSize(1200, 700)
         self.initUI()
 
-
     """
     Function to separate the # from the query names E.g.(Sequentialscan#1)
     """
-    def substring_before(self,s, delim):
-        return s.partition(delim)[0]
 
+    def substring_before(self, s, delim):
+        return s.partition(delim)[0]
 
     """
     Function to display the traversal tree
     """
+
     def treeDisplay(self):
-        f = graphviz.Digraph(filename = "hello.gv")
+        f = graphviz.Digraph(filename="hello.gv")
 
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
@@ -37,54 +38,50 @@ class MainWindow(QMainWindow):
         self.dbObj.nodeCount = 1
 
         for node in self.dbObj.nodeList:
-            f.node(node,self.substring_before(node,"#"))
+            f.node(node, self.substring_before(node, "#"))
 
         for annotate in adjList:
-            if len(adjList[annotate]) != 0 :
+            if len(adjList[annotate]) != 0:
                 for annotateString in adjList[annotate]:
-                    f.edge(annotate,annotateString)
-
+                    f.edge(annotate, annotateString)
 
         # names = ["A","B","C","D","E","F","G","H"]
         # positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
         # for name, position in zip(names, positions):
         #     f.node(name, position)
-        
+
         # #Specify edges
         # f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
         # f.edge("B","D"); f.edge("B","E") #Team A relationship
         # f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
-        
-        f.render("temp_img",format="png", view=False)
+
+        f.render("temp_img", format="png", view=False)
 
         self.im = QPixmap("./temp_img.png")
         self.imgLabel.setPixmap(self.im)
         self.imgLabel.setFixedHeight(self.im.size().height())
         self.imgLabel.setFixedWidth(self.im.size().width())
 
-
-    """
-    Function to call annotate query function
-    """
     def annotateQuery(self):
-        #to get the text use
+        """
+            Function to call annotate query function
+        """
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
+        self.dbObj.getAltQueryPlans()
+        # Remember to retrieve the alternate query plans!
         output = []
         processPlan(plan, output)
-
         new_output = processCosts(output, self.dbObj)
 
-        data=[]
-        for i,x  in enumerate(new_output):
-            data.append(str(i+1)+ '.     ' + x)
+        data = []
+        for i, x in enumerate(new_output):
+            data.append(str(i+1) + '.     ' + x)
             self.el1.setText("\n".join(data))
-        
 
     def initUI(self):
         self.setWindowTitle("My App")
         layout = QtWidgets.QVBoxLayout()
-
 
         # Create a form layout for the label and line edit
         topLayout = QtWidgets.QFormLayout()
@@ -95,12 +92,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.queryLabel)
         layout.addWidget(self.textEdit)
 
-
         # Annotate Query button
         topBtn = QtWidgets.QPushButton('Annotate Query')
         layout.addWidget(topBtn)
         topBtn.clicked.connect(self.annotateQuery)
-
 
         # Annotate Query text display
         self.el1 = QtWidgets.QTextEdit(self)
@@ -126,18 +121,16 @@ class MainWindow(QMainWindow):
 
         # Grid layout for the Image label
         self.grid = QtWidgets.QGridLayout()
-        self.grid.addWidget(self.imgScrollArea,10,10,alignment=Qt.AlignmentFlag.AlignCenter)
+        self.grid.addWidget(self.imgScrollArea, 10, 10,
+                            alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(self.grid)
-        
-        
+
         # Sets final layout to widget
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
 
         # Set the central widget of the Window.
         self.setCentralWidget(widget)
-
-    
 
 
 # app = QApplication([])
