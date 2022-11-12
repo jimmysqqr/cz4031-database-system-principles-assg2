@@ -117,8 +117,6 @@ class DBConnection:
                 "Aggregate#3" : ["Sort#4", "Seq Scan#5"]
             }
         """
-        # print("\nNew Iteration\n")
-        # print(f"self.nodeCount={self.nodeCount}")
 
         # leaf node
         if 'Plans' not in queryPlan:
