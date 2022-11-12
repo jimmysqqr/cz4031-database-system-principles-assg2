@@ -102,7 +102,7 @@ class DBConnection:
 
     def getAdjList(self, queryPlan, result):
         """
-        This method performs a post order breadth traversal on the query plan (a nested dictionary) and returns an adjacency list of operators as a dict type
+        This method performs a post order DFS traversal on the query plan (a nested dictionary) and returns an adjacency list of operators as a dict type
             { parent node : [child node 1, child node 2, ...] }
 
         We use a count to keep track of the number of nodes visited and append it to the end of each node to make it unique 
@@ -112,10 +112,8 @@ class DBConnection:
                 "Aggregate#3" : ["Sort#4", "Seq Scan#5"]
             }
         """
-        # print("\nNew Iteration\n")
-        # print(f"self.nodeCount={self.nodeCount}")
 
-        # leaf node
+        # Leaf node
         if 'Plans' not in queryPlan:
             if self.nodeCount == 1:
                 self.nodeList.append(
@@ -124,14 +122,14 @@ class DBConnection:
             self.nodeCount += 1
             return [result, curIterCount]
 
-        # node with child nodes
+        # Node with child nodes
         else:
-            # name the parent node, increment the count
+            # Name the parent node, increment the count
             planNodeType = f"{queryPlan['Node Type']}#{self.nodeCount}"
             if planNodeType not in self.nodeList:
                 self.nodeList.append(planNodeType)
 
-            # keep track of count in this recursion iteration
+            # Keep track of count in this recursion iteration
             curIterCount = self.nodeCount
             self.nodeCount += 1
 
@@ -139,12 +137,12 @@ class DBConnection:
             for subplan in queryPlan['Plans']:
                 nextIterCount = self.getAdjList(subplan, result)[1]
 
-                # name the child node, increment the count
+                # Name the child node, increment the count
                 subplanNodeType = f"{subplan['Node Type']}#{nextIterCount}"
                 if subplanNodeType not in self.nodeList:
                     self.nodeList.append(subplanNodeType)
 
-                # add the child node to its parent node in the adjacency list
+                # Add the child node to its parent node in the adjacency list
                 if planNodeType in result:
                     result[planNodeType].append(subplanNodeType)
                 else:
@@ -152,6 +150,7 @@ class DBConnection:
 
             # return curIterCount (OR, in the 1st iteration, return the final result)
             return [result, curIterCount]
+
 
     def getTotalCost(self, postOrder):
         """
@@ -164,7 +163,8 @@ class DBConnection:
 
         return result
 
-    def generatePrefixSumJoin(self):
+
+    def getPrefixSumJoin(self):
         """
         This method returns a list of the cost of the subtrees rooted by a join operator in the query plan operator tree.
         It also checks if a 'Gather' operator is used after the join.
@@ -190,14 +190,14 @@ class DBConnection:
                 currSum = 0
                 # Reset the curSum to 0 (This helps isolate the cost of the join operator better)
 
-        self.prefixSumJoin = result
+        return result
+
 
     def evaluateAQP(self, postOrder, key):
         """
         NOTE: This method would only be called if the query has a join operation.
         """
-        if len(self.prefixSumJoin) == 0:
-            self.generatePrefixSumJoin()
+        self.prefixSumJoin = self.getPrefixSumJoin()
 
         currSum = 0
         result = list()
@@ -217,9 +217,6 @@ class DBConnection:
                 currSum = 0
                 # Reset the curSum to 0 (This helps isolate the cost of the join operator better)
 
-        #diff = [round(result[i] - self.prefixSumJoin[i], 2) for i in range(len(result))]
-        # Let us not store difference but rather the raw result
-
         self.joinTreeCostDict[key] = result
 
     def getAltQueryPlans(self):
@@ -229,23 +226,16 @@ class DBConnection:
         Specifically,
 
         1. We disabled certain join algorithms as we feel the choice of join algorithm is a crucial companent in a QEP. PostgreSQL allows us to disable Merge, Hash and NL joins.
-        2. Coming to the data sccess methods, we are going under the assumption the planner would choose the most efficient access method. Plus it's not as 'interesting' to play with.
+        2. Coming to the data access methods, we are going under the assumption the planner would choose the most efficient access method. Plus it's not as 'interesting' to play with.
         3. Regarding the other miscellaneous methods, we shall toggle them wrt to the join, eg:- don't turn of sort if theres a merge join.
 
         To reduce the search space we are going to perform an informed 'switching off' of the operators. As this method is likely to be called after the qep is generated, we shall 
         leverage the preorder traversal (stored in q) to help us switch off operators that appear in the query. [eg:- only turn off merge join if it's actually being used in the qep]
 
         """
+        self.altQueryPlans = list()
         self.postOrder = self.getPostOrder(self.queryPlan, [])
-        # self.adjList = self.getAdjList(self.queryPlan, {})
         self.estimatedCost = self.getTotalCost(self.postOrder)
-
-        print("Original QEP")
-        print(self.postOrder)
-        # print("Adjacency List")
-        # print(self.adjList)
-        print(f"Total Estimated Cost = {round(self.estimatedCost, 2)}")
-        print()
 
         if (self.hasJoin):
             joins = ['HASHJOIN', 'MERGEJOIN', 'NESTLOOP', 'HASHJOIN']
@@ -295,4 +285,5 @@ class DBConnection:
             """
             pass
 
-        print(f"{len(self.altQueryPlans)} alternate query plans were retrieved.")
+        #print(f"{len(self.altQueryPlans)} alternate query plans were retrieved.")
+        return

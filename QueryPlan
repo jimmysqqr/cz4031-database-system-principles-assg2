@@ -1,0 +1,43 @@
+graph {
+	"Sort#1" [label=Sort]
+	"Aggregate#2" [label=Aggregate]
+	"Gather Merge#3" [label="Gather Merge"]
+	"Sort#4" [label=Sort]
+	"Aggregate#5" [label=Aggregate]
+	"Hash Join#6" [label="Hash Join"]
+	"Hash Join#7" [label="Hash Join"]
+	"Hash Join#8" [label="Hash Join"]
+	"Hash Join#9" [label="Hash Join"]
+	"Hash Join#10" [label="Hash Join"]
+	"Seq Scan#11" [label="Seq Scan"]
+	"Hash#12" [label=Hash]
+	"Seq Scan#13" [label="Seq Scan"]
+	"Hash#14" [label=Hash]
+	"Seq Scan#15" [label="Seq Scan"]
+	"Hash#16" [label=Hash]
+	"Seq Scan#17" [label="Seq Scan"]
+	"Hash#18" [label=Hash]
+	"Seq Scan#19" [label="Seq Scan"]
+	"Hash#20" [label=Hash]
+	"Seq Scan#21" [label="Seq Scan"]
+	"Hash Join#10" -- "Seq Scan#11"
+	"Hash Join#10" -- "Hash#12"
+	"Hash#12" -- "Seq Scan#13"
+	"Hash Join#9" -- "Hash Join#10"
+	"Hash Join#9" -- "Hash#14"
+	"Hash#14" -- "Seq Scan#15"
+	"Hash Join#8" -- "Hash Join#9"
+	"Hash Join#8" -- "Hash#16"
+	"Hash#16" -- "Seq Scan#17"
+	"Hash Join#7" -- "Hash Join#8"
+	"Hash Join#7" -- "Hash#18"
+	"Hash#18" -- "Seq Scan#19"
+	"Hash Join#6" -- "Hash Join#7"
+	"Hash Join#6" -- "Hash#20"
+	"Hash#20" -- "Seq Scan#21"
+	"Aggregate#5" -- "Hash Join#6"
+	"Sort#4" -- "Aggregate#5"
+	"Gather Merge#3" -- "Sort#4"
+	"Aggregate#2" -- "Gather Merge#3"
+	"Sort#1" -- "Aggregate#2"
+}

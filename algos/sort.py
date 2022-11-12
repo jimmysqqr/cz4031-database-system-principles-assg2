@@ -22,5 +22,4 @@ def sort(plan, output):
             output_string += str(plan["Sort Key"]) + " in ascending order."
 
     output.append(output_string)
-
     return

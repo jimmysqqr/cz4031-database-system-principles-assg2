@@ -17,5 +17,4 @@ def append(plan, output):
         output_string += "The scan outputs are then combined."
 
     output.append(output_string)
-
     return output

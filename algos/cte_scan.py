@@ -22,5 +22,4 @@ def cte_scan(plan, output):
         output_string += ". "
 
     output.append(output_string)
-
     return
