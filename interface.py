@@ -1,65 +1,49 @@
-import json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QScrollArea
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QPixmap
 from PyQt6 import QtWidgets, QtCore
+from preprocessing import DBConnection
 from annotation import processCosts, processPlan
 import graphviz
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, obj):
+    def __init__(self, password):
         super(MainWindow, self).__init__()
-        self.dbObj = obj
+        """
+            The constructor creates a new connection to the database every time for security.
+        """
+        self.dbObj = obj = DBConnection(host="localhost", port="5432",
+                                        dbname="TPC-H", user="postgres", password=password)
         self.setFixedSize(1200, 700)
         self.initUI()
 
-    """
-    Function to separate the # from the query names E.g.(Sequentialscan#1)
-    """
-
-    def substring_before(self, s, delim):
-        return s.partition(delim)[0]
-
-    """
-    Function to display the traversal tree
-    """
-
     def treeDisplay(self):
-        f = graphviz.Digraph(filename="hello.gv")
+        """
+            Function to display the traversal tree
+        """
+        f = graphviz.Graph()
 
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
         adjList = self.dbObj.getAdjList(plan, {})[0]
         nodeList = self.dbObj.nodeList
 
-        # orderList = self.dbObj.getPostOrder(plan, {})
-        # print(orderList)
-
         self.dbObj.nodeCount = 1
         self.dbObj.nodeList = list()
 
         for node in nodeList:
-            f.node(node, self.substring_before(node, "#"))
+            name = node.split('#')[0]
+            f.node(node, name)
 
         for annotate in adjList:
             if len(adjList[annotate]) != 0:
                 for annotateString in adjList[annotate]:
                     f.edge(annotate, annotateString)
 
-        # names = ["A","B","C","D","E","F","G","H"]
-        # positions = ["CEO","Team A Lead","Team B Lead", "Staff A","Staff B", "Staff C", "Staff D", "Staff E"]
-        # for name, position in zip(names, positions):
-        #     f.node(name, position)
+        f.render("QueryPlan", format="png", view=False)
 
-        # #Specify edges
-        # f.edge("A","B"); f.edge("A","C") #CEO to Team Leads
-        # f.edge("B","D"); f.edge("B","E") #Team A relationship
-        # f.edge("C","F"); f.edge("C","G"); f.edge("C","H") #Team B relationship
-
-        f.render("temp_img", format="png", view=False)
-
-        self.im = QPixmap("./temp_img.png")
+        self.im = QPixmap("./QueryPlan.png")
         self.imgLabel.setPixmap(self.im)
         self.imgLabel.setFixedHeight(self.im.size().height())
         self.imgLabel.setFixedWidth(self.im.size().width())
@@ -72,6 +56,7 @@ class MainWindow(QMainWindow):
         plan = self.dbObj.getQueryPlan(query)
         self.dbObj.getAltQueryPlans()
         # Remember to retrieve the alternate query plans!
+
         output = []
         processPlan(plan, output)
         new_output = processCosts(output, self.dbObj)
@@ -133,11 +118,3 @@ class MainWindow(QMainWindow):
 
         # Set the central widget of the Window.
         self.setCentralWidget(widget)
-
-
-# app = QApplication([])
-# app.setStyle('Fusion')
-# window = MainWindow()
-# window.show()
-
-# app.exec()

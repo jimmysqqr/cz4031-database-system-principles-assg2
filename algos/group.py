@@ -24,5 +24,4 @@ def group(plan, output):
     output_string += "."
 
     output.append(output_string)
-
     return

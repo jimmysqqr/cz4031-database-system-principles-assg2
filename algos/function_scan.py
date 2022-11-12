@@ -9,5 +9,4 @@ def function_scan(plan, output):
         plan["Function Name"] + " is executed and a set of records is outputted."
 
     output.append(output_string)
-
     return
