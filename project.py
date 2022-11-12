@@ -60,9 +60,11 @@ class Application():
         """
 
         append4 = """
-            select p_brand from part where p_size < 2
-            except
-            select p_brand from part where p_size > 20;
+            SELECT * FROM (
+  (SELECT * FROM customer WHERE c_custkey = 1 ORDER BY c_acctbal DESC)
+     UNION ALL
+    (SELECT * FROM customer where c_custkey = 7 order by c_acctbal DESC)
+) AS RESULT ORDER BY c_acctbal DESC LIMIT 20;
         """
 
         # plan = obj.getQueryPlan(testQuery)
