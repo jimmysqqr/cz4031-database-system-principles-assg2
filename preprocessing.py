@@ -24,6 +24,7 @@ class DBConnection:
         self.altQueryPlans = list()
         self.queryCostDict = dict()
         self.joinTreeCostDict = dict()
+        self.nodeList = list()
 
         try:
             # Connecting to the database and initializing the cursor as class variables
@@ -37,7 +38,6 @@ class DBConnection:
             print("Error while connecting to PostgreSQL: ", error)
             exit()
 
-
     def closeConnection(self):
         """
         Method that closes the connection to PostgreSQL.
@@ -46,7 +46,6 @@ class DBConnection:
             self.cursor.close()
             self.connection.close()
             print("PostgreSQL connection has been closed.")
-
 
     def getQueryPlan(self, query):
         """
@@ -80,7 +79,6 @@ class DBConnection:
         self.queryPlan = plan
 
         return self.queryPlan
-
 
     def getPostOrder(self, queryPlan, result):
         """
@@ -116,11 +114,13 @@ class DBConnection:
         """
         # print("\nNew Iteration\n")
         # print(f"self.nodeCount={self.nodeCount}")
-        
+
         # leaf node
         if 'Plans' not in queryPlan:
+            if self.nodeCount == 1:
+                self.nodeList.append(
+                    f"{queryPlan['Node Type']}#{self.nodeCount}")
             curIterCount = self.nodeCount
-            # print(f"curIterCount={curIterCount}")
             self.nodeCount += 1
             return [result, curIterCount]
 
@@ -128,25 +128,27 @@ class DBConnection:
         else:
             # name the parent node, increment the count
             planNodeType = f"{queryPlan['Node Type']}#{self.nodeCount}"
+            if planNodeType not in self.nodeList:
+                self.nodeList.append(planNodeType)
 
             # keep track of count in this recursion iteration
-            curIterCount = self.nodeCount 
+            curIterCount = self.nodeCount
             self.nodeCount += 1
 
-            # DFS: keep traversing until leaf node is reached    
-            for subplan in queryPlan['Plans']:                
+            # DFS: keep traversing until leaf node is reached
+            for subplan in queryPlan['Plans']:
                 nextIterCount = self.getAdjList(subplan, result)[1]
-                # print(f"nextIterCount={nextIterCount}")
 
                 # name the child node, increment the count
                 subplanNodeType = f"{subplan['Node Type']}#{nextIterCount}"
-                
+                if subplanNodeType not in self.nodeList:
+                    self.nodeList.append(subplanNodeType)
+
                 # add the child node to its parent node in the adjacency list
                 if planNodeType in result:
                     result[planNodeType].append(subplanNodeType)
                 else:
                     result[planNodeType] = [subplanNodeType]
-                # print(result)
 
             # return curIterCount (OR, in the 1st iteration, return the final result)
             return [result, curIterCount]
@@ -161,7 +163,6 @@ class DBConnection:
             result += op[1]
 
         return result
-
 
     def generatePrefixSumJoin(self):
         """
@@ -191,7 +192,6 @@ class DBConnection:
 
         self.prefixSumJoin = result
 
-
     def evaluateAQP(self, postOrder, key):
         """
         NOTE: This method would only be called if the query has a join operation.
@@ -219,9 +219,8 @@ class DBConnection:
 
         #diff = [round(result[i] - self.prefixSumJoin[i], 2) for i in range(len(result))]
         # Let us not store difference but rather the raw result
-        
-        self.joinTreeCostDict[key] = result
 
+        self.joinTreeCostDict[key] = result
 
     def getAltQueryPlans(self):
         """
@@ -278,7 +277,8 @@ class DBConnection:
                 cost = self.getTotalCost(aqp)
                 # Computing the postorder of the AQP and it's estimated total cost
 
-                key = list(set(['HASHJOIN', 'MERGEJOIN', 'NESTLOOP']) - set([j1, j2]))[0]
+                key = list(
+                    set(['HASHJOIN', 'MERGEJOIN', 'NESTLOOP']) - set([j1, j2]))[0]
                 self.queryCostDict[key] = cost
                 # Adding the cost to a class dictionary (key is just a protracted way to retrieve the join type!)
 

@@ -17,11 +17,11 @@ from
 	lineitem
 where
 	o_orderkey = l_orderkey
-	and l_shipmode in (':1', ':2')
+	and l_shipmode in ('SHIP', 'AIR')
 	and l_commitdate < l_receiptdate
 	and l_shipdate < l_commitdate
-	and l_receiptdate >= date ':3'
-	and l_receiptdate < date ':3' + interval '1' year
+	and l_receiptdate >= '1996-01-31'
+	and l_receiptdate < '1997-01-31'
 group by
 	l_shipmode
 order by
