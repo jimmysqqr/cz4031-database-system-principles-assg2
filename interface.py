@@ -31,13 +31,15 @@ class MainWindow(QMainWindow):
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
         adjList = self.dbObj.getAdjList(plan, {})[0]
+        nodeList = self.dbObj.nodeList
 
         # orderList = self.dbObj.getPostOrder(plan, {})
         # print(orderList)
 
         self.dbObj.nodeCount = 1
+        self.dbObj.nodeList = list()
 
-        for node in self.dbObj.nodeList:
+        for node in nodeList:
             f.node(node, self.substring_before(node, "#"))
 
         for annotate in adjList:
