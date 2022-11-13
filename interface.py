@@ -26,27 +26,31 @@ class MainWindow(QMainWindow):
 
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
-        adjList = self.dbObj.getAdjList(plan, {})[0]
-        nodeList = self.dbObj.nodeList
+        
+        if type(plan) is not dict:
+            self.el1.setText(f'ERROR: Tree visualisation failed. Please check your query.\n{plan}')
+        else:
+            adjList = self.dbObj.getAdjList(plan, {})[0]
+            nodeList = self.dbObj.nodeList
 
-        self.dbObj.nodeCount = 1
-        self.dbObj.nodeList = list()
+            self.dbObj.nodeCount = 1
+            self.dbObj.nodeList = list()
 
-        for node in nodeList:
-            name = node.split('#')[0]
-            f.node(node, name)
+            for node in nodeList:
+                name = node.split('#')[0]
+                f.node(node, name)
 
-        for annotate in adjList:
-            if len(adjList[annotate]) != 0:
-                for annotateString in adjList[annotate]:
-                    f.edge(annotate, annotateString)
+            for annotate in adjList:
+                if len(adjList[annotate]) != 0:
+                    for annotateString in adjList[annotate]:
+                        f.edge(annotate, annotateString)
 
-        f.render("QueryPlan", format="png", view=False)
+            f.render("QueryPlan", format="png", view=False)
 
-        self.im = QPixmap("./QueryPlan.png")
-        self.imgLabel.setPixmap(self.im)
-        self.imgLabel.setFixedHeight(self.im.size().height())
-        self.imgLabel.setFixedWidth(self.im.size().width())
+            self.im = QPixmap("./QueryPlan.png")
+            self.imgLabel.setPixmap(self.im)
+            self.imgLabel.setFixedHeight(self.im.size().height())
+            self.imgLabel.setFixedWidth(self.im.size().width())
 
     def annotateQuery(self):
         """
@@ -54,17 +58,23 @@ class MainWindow(QMainWindow):
         """
         query = self.textEdit.toPlainText()
         plan = self.dbObj.getQueryPlan(query)
-        self.dbObj.getAltQueryPlans()
-        # Remember to retrieve the alternate query plans!
 
-        output = []
-        processPlan(plan, output)
-        new_output = processCosts(output, self.dbObj)
+        # self.el1.setText(str(plan))
 
-        data = []
-        for i, x in enumerate(new_output):
-            data.append(str(i+1) + '.     ' + x)
-            self.el1.setText("\n".join(data))
+        if type(plan) is not dict:
+            self.el1.setText(f'ERROR: Annotation failed. Please check your query.\n{plan}')
+        else:
+            # Remember to retrieve the alternate query plans!
+            self.dbObj.getAltQueryPlans()
+
+            output = []
+            processPlan(plan, output)
+            new_output = processCosts(output, self.dbObj)
+
+            data = []
+            for i, x in enumerate(new_output):
+                data.append(str(i+1) + '.     ' + x)
+                self.el1.setText("\n".join(data))
 
     def initUI(self):
         self.setWindowTitle("My App")

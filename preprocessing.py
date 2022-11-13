@@ -30,6 +30,7 @@ class DBConnection:
             # Connecting to the database and initializing the cursor as class variables
             self.connection = psycopg2.connect(
                 host=host, port=port, dbname=dbname, user=user, password=password)
+            self.connection.autocommit = True
             self.cursor = self.connection.cursor()
             print("Connected to PostgreSQL successfully!")
 
@@ -70,15 +71,23 @@ class DBConnection:
         Have used FORMAT JSON for now, maybe can add ANALYZE and VERBOSE?
         """
         self.query = query
-        self.cursor.execute(
-            f"EXPLAIN (FORMAT JSON) {self.query}")
+        try:
+            self.cursor.execute(
+                f"EXPLAIN (FORMAT JSON) {self.query}")
+        except Exception as e:
+            err_msg_list = str(e).split('\n')
+            err_msg = err_msg_list[0]
+            for msg in err_msg_list:
+                if "HINT" in msg:
+                    err_msg += f"\n{msg}"
+            return err_msg
+        else:
+            # Need to peel away the wrappers from the raw output
+            rawOutput = self.cursor.fetchall()
+            plan = rawOutput[0][0][0]['Plan']
+            self.queryPlan = plan
 
-        # Need to peel away the wrappers from the raw output
-        rawOutput = self.cursor.fetchall()
-        plan = rawOutput[0][0][0]['Plan']
-        self.queryPlan = plan
-
-        return self.queryPlan
+            return self.queryPlan
 
     def getPostOrder(self, queryPlan, result):
         """
