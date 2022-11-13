@@ -1,9 +1,41 @@
 graph {
-	"Hash Join#1" [label="Hash Join"]
-	"Seq Scan#2" [label="Seq Scan"]
-	"Hash#3" [label=Hash]
-	"Seq Scan#4" [label="Seq Scan"]
-	"Hash Join#1" -- "Seq Scan#2"
-	"Hash Join#1" -- "Hash#3"
-	"Hash#3" -- "Seq Scan#4"
+	"Sort#1" [label=Sort]
+	"Nested Loop#2" [label="Nested Loop"]
+	"Nested Loop#3" [label="Nested Loop"]
+	"Nested Loop#4" [label="Nested Loop"]
+	"Hash Join#5" [label="Hash Join"]
+	"Seq Scan#6" [label="Seq Scan"]
+	"Hash#7" [label=Hash]
+	"Seq Scan#8" [label="Seq Scan"]
+	"Aggregate#9" [label=Aggregate]
+	"Nested Loop#10" [label="Nested Loop"]
+	"Nested Loop#11" [label="Nested Loop"]
+	"Nested Loop#12" [label="Nested Loop"]
+	"Index Scan#13" [label="Index Scan"]
+	"Index Scan#14" [label="Index Scan"]
+	"Index Scan#15" [label="Index Scan"]
+	"Memoize#16" [label=Memoize]
+	"Index Scan#17" [label="Index Scan"]
+	"Index Scan#18" [label="Index Scan"]
+	"Index Scan#19" [label="Index Scan"]
+	"Index Only Scan#20" [label="Index Only Scan"]
+	"Hash Join#5" -- "Seq Scan#6"
+	"Hash Join#5" -- "Hash#7"
+	"Hash#7" -- "Seq Scan#8"
+	"Hash#7" -- "Aggregate#9"
+	"Nested Loop#12" -- "Index Scan#13"
+	"Nested Loop#12" -- "Index Scan#14"
+	"Nested Loop#11" -- "Nested Loop#12"
+	"Nested Loop#11" -- "Index Scan#15"
+	"Nested Loop#10" -- "Nested Loop#11"
+	"Nested Loop#10" -- "Memoize#16"
+	"Memoize#16" -- "Index Scan#17"
+	"Aggregate#9" -- "Nested Loop#10"
+	"Nested Loop#4" -- "Hash Join#5"
+	"Nested Loop#4" -- "Index Scan#18"
+	"Nested Loop#3" -- "Nested Loop#4"
+	"Nested Loop#3" -- "Index Scan#19"
+	"Nested Loop#2" -- "Nested Loop#3"
+	"Nested Loop#2" -- "Index Only Scan#20"
+	"Sort#1" -- "Nested Loop#2"
 }
