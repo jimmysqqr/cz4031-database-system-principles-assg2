@@ -1,8 +1,8 @@
-import os, json
+import os
 from getpass import getpass
 from interface import MainWindow
-from preprocessing import DBConnection
 from PyQt6.QtWidgets import QApplication
+
 
 class Application():
     def __init__(self):
@@ -32,7 +32,6 @@ class Application():
         window.show()
         app.exec()
 
-        
 
 if __name__ == '__main__':
     Application.main()
