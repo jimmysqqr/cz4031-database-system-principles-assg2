@@ -10,7 +10,8 @@ def aggregate(plan, output):
     # Aggregate row that are already sorted (from a sorted attr or index scan)
     # also process GROUP BY and/or HAVING/FILTER operator if necessary
     if plan["Strategy"] == "Sorted":
-        annotation.processPlan(plan["Plans"][0], output)
+        for child in plan["Plans"]:
+            annotation.processPlan(child, output)
         if "Group Key" in plan:
             if len(plan["Group Key"]) == 1:
                 output_string += "The sorted rows are grouped based on the key: "
